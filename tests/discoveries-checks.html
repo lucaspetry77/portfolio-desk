@@ -1,0 +1,30 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Verificações do ateliê</title><style>body{font:15px/1.6 system-ui;background:#f5f0e6;padding:30px;color:#292720}iframe{position:absolute;left:-15000px;width:1280px;height:800px}.fail{color:#c22}</style><h1>Verificações do ateliê</h1><p id="status">Executando…</p><ol id="results"></ol><iframe title="Cena sob teste"></iframe><script>
+(async()=>{
+const frame=document.querySelector('iframe'), list=document.querySelector('#results');let pass=0,fail=0;
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const assert=(ok,label)=>{const li=document.createElement('li');li.textContent=(ok?'PASS — ':'FAIL — ')+label;if(ok)pass++;else{fail++;li.className='fail'}list.append(li)};
+const saved=sessionStorage.getItem('portfolio-mode');
+const load=(url)=>new Promise(r=>{frame.onload=r;frame.src=url});
+try{
+sessionStorage.setItem('portfolio-mode','3d');await load('../index-v3.html?test=discoveries#atelie');await wait(200);
+let w=frame.contentWindow,d=frame.contentDocument,api=w.__scene;
+assert(!!api&&!!w.deskDiscoveries,'Cena e novos objetos inicializam');
+assert(!d.querySelector('#discoveryPanel').hidden&&d.querySelector('#discoveryPanel').dataset.station==='card','Link Ateliê enquadra o cartão');
+const y=w.scrollY;d.querySelector('#turnBusinessCard').click();assert(d.querySelector('.desk-business-card').classList.contains('is-flipped')&&w.scrollY===y,'Virar cartão preserva a posição na mesa');
+for(const name of ['irCartao','cartao','irMiniatura','miniatura','irCelular']){const seg=api.segs.find(s=>s.nome===name);for(const t of [0,.5,1]){api.seek(seg.y0+seg.px*t);assert(!/NaN|Infinity/.test(d.querySelector('#world').style.transform),'Câmera válida em '+name+' / '+t)}}
+api.seek(api.segs.find(s=>s.nome==='miniatura').y0+1);assert(d.querySelector('#discoveryPanel').dataset.station==='model','Miniatura apresenta controles próprios');
+d.querySelector('[data-layer="2"]').click();assert(d.querySelector('#modelSeparation').value==='100'&&d.querySelector('#layerExplanation').textContent.includes('HTML'),'Selecionar camada separa o modelo e explica a interface');
+d.querySelector('#modelSeparation').value='42';d.querySelector('#modelSeparation').dispatchEvent(new w.Event('input'));assert(d.querySelector('.discoveries-world').style.getPropertyValue('--separation')==='0.42','Separação acompanha controle sem temporizador');
+d.querySelector('#modelRotation').value='30';d.querySelector('#modelRotation').dispatchEvent(new w.Event('input'));assert(d.querySelector('.desk-model').style.getPropertyValue('--model-turn')==='30deg','Rotação responde ao controle');
+api.seek(api.segs.find(s=>s.nome==='cartao').y0+1);assert(d.querySelector('#discoveryPanel').dataset.station==='card','Rolar de volta restaura a parada do cartão');
+api.seek(api.segs.find(s=>s.nome==='apagar').y0);assert(d.querySelector('#discoveryPanel').hidden&&!d.querySelector('#telaOn').inert,'Contato acessível após as novas paradas');
+api.seek(api.segs.find(s=>s.nome==='miniatura').y0+1);await wait(800);assert(api.idle,'Cena para de renderizar em repouso');
+d.querySelector('#modeToggle').click();assert(d.querySelector('#discoveryPanel').hidden&&w.getComputedStyle(d.querySelector('#atelie')).display!=='none','Modo leitura tem conteúdo equivalente e oculta controles 3D');
+frame.style.width='390px';frame.style.height='844px';await load('../index-v3.html?test=mobile#atelie');await wait(200);w=frame.contentWindow;d=frame.contentDocument;
+assert(d.documentElement.scrollWidth===390,'Modo leitura mobile sem overflow');
+d.querySelector('#modeToggle').click();w.dispatchEvent(new w.CustomEvent('portfoliochapter',{detail:{chapter:'miniatura',instant:true}}));await wait(200);
+const panel=d.querySelector('#discoveryPanel').getBoundingClientRect();assert(panel.left>=0&&panel.right<=390&&panel.bottom<=844,'Controles da miniatura cabem no mobile');
+const model=d.querySelector('.model-plinth').getBoundingClientRect();assert(model.left>=0&&model.right<=390,'Miniatura cabe na largura mobile');
+}catch(e){assert(false,e.stack||String(e))}finally{if(saved===null)sessionStorage.removeItem('portfolio-mode');else sessionStorage.setItem('portfolio-mode',saved);document.querySelector('#status').textContent=`${pass} verificações passaram; ${fail} falharam.`;document.title=fail?'FAIL — Ateliê':'PASS — Ateliê'}
+})();
+</script></html>

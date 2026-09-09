@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-desk="wood">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lucas Petry — ideias fora da tela</title>
+<meta name="description" content="Design, marketing e IA, com um olhar humano. Explore a mesa e o portfólio de Lucas Petry.">
+<meta name="theme-color" content="#2A0E1F">
+<meta property="og:title" content="Lucas Petry — ideias fora da tela">
+<meta property="og:description" content="Design, marketing e IA, com um olhar humano. Explore a mesa e o portfólio de Lucas Petry.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F45A2E'/%3E%3Crect x='14' y='18' width='36' height='26' rx='4' fill='%2317171B'/%3E%3Crect x='9' y='44' width='46' height='5' rx='2.5' fill='%2325252B'/%3E%3C/svg%3E">
+<link rel="preload" href="assets/fonts/bricolage-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/v2/desk.webp" as="image" fetchpriority="high">
+<link rel="preload" href="assets/img/fone.webp" as="image">
+<script>
+try { if (sessionStorage.getItem('portfolio-mode') === 'plain' || (sessionStorage.getItem('portfolio-mode') !== '3d' && matchMedia('(max-width: 700px), (prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('is-plain'); } catch { if (matchMedia('(max-width: 700px), (prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('is-plain'); }
+document.documentElement.classList.add('js');
+if (!document.documentElement.classList.contains('is-plain') && 'scrollRestoration' in history) history.scrollRestoration = 'manual';
+</script>
+<link rel="stylesheet" href="styles-v2.css">
+<link rel="stylesheet" href="desk-discoveries.css">
+</head>
+<body>
+<a class="skip-link" href="#leitura">Pular para o conteúdo</a>
+<header class="site-header">
+  <a href="#mesa" class="wordmark" aria-label="Lucas Petry, início"><span class="monogram">lp.</span><span>Lucas Petry<small>DESIGNER & EDUCADOR</small></span></a>
+  <div class="header-right"><span class="local-time">Porto Alegre, BR <time id="deskClock"></time></span><a class="contact-link" href="mailto:lucas@asimov.academy">Vamos conversar <span aria-hidden="true">↗</span></a></div>
+</header>
+<div class="hero-copy" id="heroCopy">
+  <span class="eyebrow">DESIGN, CAFÉ E UM POUCO DE IA.</span>
+  <h1>Vem conhecer meu trabalho</h1>
+  <p>Boas ideias começam com uma conversa.<br>As minhas estão aqui, em cima da mesa.</p>
+</div>
+
+
+<div class="stage" id="stage" aria-label="Mesa interativa em 3D">
+  <div class="world" id="world">
+    <div class="desk" id="desk">
+      <!-- ladrilhos da mesa injetados via JS (.tile) -->
+
+      <div class="window-light" aria-hidden="true"></div>
+      <!-- post-it na mesa -->
+      <div class="obj obj-sticker" data-rot="-5" data-dx="0" data-dy="-340" data-drot="4">
+        <div class="obj-in" style="--i:0">
+          <div class="postit">
+            <span class="l1">Mesa de</span>
+            <span class="l2">Lucas Petry</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- terço -->
+      <div class="obj obj-terco" data-rot="-10" data-dx="200" data-dy="-340" data-drot="-16">
+        <div class="obj-in" style="--i:8">
+          <img src="assets/img/terco.webp" width="340" height="352" alt="" loading="eager" decoding="async">
+        </div>
+      </div>
+
+      <!-- planta (costela de adão) -->
+      <div class="obj obj-plant" data-dx="-900" data-dy="-260" data-drot="-30">
+        <div class="obj-in" style="--i:1">
+          <img src="assets/v2/plant.webp" width="1254" height="1254" alt="" loading="eager" decoding="async">
+        </div>
+      </div>
+
+      <!-- café -->
+      <div class="obj obj-cafe" data-rot="-6" data-dx="900" data-dy="-300" data-drot="28">
+        <div class="obj-in" style="--i:2">
+          <img src="assets/img/cafe.webp" width="660" height="612" alt="" loading="eager" decoding="async">
+        </div>
+      </div>
+
+      <!-- fone -->
+      <div class="obj obj-fone" data-rot="-6" data-dx="950" data-dy="-300" data-drot="28">
+        <div class="obj-in" style="--i:7">
+          <img src="assets/img/fone.webp" width="547" height="486" alt="" loading="eager" decoding="async">
+        </div>
+      </div>
+
+      <!-- caderno (3D de verdade: contracapa, miolo de páginas, capa com dobradiça na lombada) -->
+      <div class="obj obj-caderno" data-rot="-7" data-dx="-820" data-dy="520" data-drot="-22" data-alinha="irCaderno">
+        <div class="obj-in obj-3d" style="--i:3">
+          <div class="caderno" id="caderno">
+            <div class="contracapa"></div>
+            <div class="miolo" id="miolo"><!-- .pagina geradas via JS a partir de HISTORIA --></div>
+            <div class="capa" id="capa">
+              <div class="capa-fora"><span class="book-title">Notas de<br>um designer.<small>LUCAS PETRY / VOL. 01</small></span><i class="elastico" id="elastico"></i></div>
+              <div class="capa-dentro"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- caneta -->
+      <div class="obj obj-caneta" data-rot="-7" data-dx="-820" data-dy="520" data-drot="-22">
+        <div class="obj-in" style="--i:9">
+          <img src="assets/img/caneta.webp" width="130" height="1312" alt="" loading="eager" decoding="async">
+        </div>
+      </div>
+
+      <!-- celular (tela pra cima; acende e vira a moldura do chat) -->
+      <div class="obj obj-celular" data-rot="9" data-dx="900" data-dy="520" data-drot="26" data-alinha="irCelular">
+        <div class="obj-in obj-3d" style="--i:4">
+          <div class="phone" id="phone">
+            <!-- fatias de espessura injetadas via JS (.slab) -->
+            <div class="phone-top">
+              <div class="phone-screen">
+                <div class="tela-on" id="telaOn">
+                  <div class="lock" id="lock">
+                    <span class="phone-status">9:41 <span>▮▮▮ ▰</span></span><div class="lock-hora" id="lockHora">--:--</div>
+                    <div class="lock-data" id="lockData"></div>
+                    <div class="notif" id="notif">
+                      <i class="notif-icone">L</i>
+                      <div class="notif-txt"><b>Lucas</b><span>agora</span><p>curtiu? me chama</p></div>
+                    </div>
+                  </div>
+                  <div class="chat" id="chat">
+                    <div class="chat-head"><i class="avatar">L</i><b>Lucas</b></div>
+                    <div class="bolhas">
+                      <div class="bolha" id="bolha1">Toda boa ideia começa com um “oi”.</div>
+                      <div class="bolha" id="bolha2">O que vamos criar juntos?</div>
+                    </div>
+                    <a class="phone-email" href="mailto:lucas@asimov.academy">lucas@asimov.academy ↗</a><form class="campo" id="campo" autocomplete="off">
+                      <input id="msg" type="text" placeholder="Mensagem" aria-label="Mensagem" maxlength="500">
+                      <button type="submit" aria-label="Abrir mensagem no aplicativo de e-mail">
+                        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M3.5 7.5L8 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </button>
+                    </form>
+                  </div>
+                </div>
+                <i class="ilha"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== MacBook (100% CSS 3D) ===== -->
+      <div class="laptop" id="laptop">
+        <div class="laptop-shadow laptop-shadow-soft"></div>
+        <div class="laptop-shadow laptop-shadow-contact"></div>
+
+        <div class="base" id="base">
+          <!-- fatias de espessura injetadas via JS (.slab) -->
+          <div class="base-top">
+            <div class="speaker speaker-l"></div>
+            <div class="speaker speaker-r"></div>
+            <div class="kb" id="kb" aria-hidden="true"></div>
+            <div class="trackpad"></div>
+            <i class="lip"></i>
+            <div class="base-shade" id="baseShade"></div>
+            <div class="screen-glow" id="screenGlow"></div>
+          </div>
+        </div>
+
+        <div class="lid" id="lid">
+          <div class="lid-inner">
+            <div class="display" id="display">
+              <div class="strip" id="strip"></div>
+              <div class="intro" id="intro">
+                <div class="curtain curtain-l"></div>
+                <div class="curtain curtain-r"></div>
+                <div class="stage-floor" aria-hidden="true"></div>
+                <div class="stage-light" aria-hidden="true"></div>
+                <div class="intro-vignette" aria-hidden="true"></div>
+                <div class="valance" aria-hidden="true"></div>
+                <div class="intro-txt">
+                  <span class="intro-kicker">BEM-VINDO AO MEU UNIVERSO</span><h3>Ideias fora<br>da tela.</h3>
+                  <p>Design que dá vontade de ver de perto.</p>
+                </div>
+              </div>
+              <div class="progress" id="progress"></div>
+              <div class="flash" id="flash"></div>
+              <div class="reflection" id="reflection"></div>
+            </div>
+            <div class="notch"><i class="cam"></i><i class="led"></i></div>
+            <div class="glass" id="glass"></div>
+          </div>
+          <div class="lid-outer" aria-hidden="true">
+            <svg class="apple-logo" viewBox="0 0 24 24" aria-hidden="true">
+              <defs>
+                <linearGradient id="appleGloss" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#3C3C41"/>
+                  <stop offset=".42" stop-color="#2B2B30"/>
+                  <stop offset=".5" stop-color="#0C0C0E"/>
+                  <stop offset="1" stop-color="#18181B"/>
+                </linearGradient>
+              </defs>
+              <path fill="url(#appleGloss)" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>
+            </svg>
+            <div class="lid-sheen" id="lidSheen"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="night" id="night" aria-hidden="true"></div>
+</div>
+
+<div class="vignette" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="scroller" id="scroller"></div>
+
+<nav class="dock" aria-label="Explorar portfólio">
+  <a href="#mesa" data-chapter="mesa" aria-current="location"><span class="dock-number">01</span> Mesa</a>
+  <a href="#projetos" data-chapter="projetos"><span class="dock-number">02</span> Projetos</a>
+  <a href="#historia" data-chapter="historia"><span class="dock-number">03</span> História</a>
+  <a href="#atelie" data-chapter="atelie"><span class="dock-number">04</span> Ateliê</a>
+  <a href="#contato" data-chapter="contato"><span class="dock-number">05</span> Contato</a>
+</nav>
+<div class="view-controls"><button id="modeToggle" type="button">Modo leitura <span aria-hidden="true">≡</span></button><button id="lightToggle" type="button" aria-pressed="false" aria-label="Alternar luz da mesa">Luz <span aria-hidden="true">☼</span></button></div>
+<div class="gallery-controls" id="galleryControls" hidden><button id="previousProject" aria-label="Projeto anterior">←</button><span id="projectCount" aria-live="polite">01 / 06</span><button id="nextProject" aria-label="Próximo projeto">→</button><button id="openProject">Ver conceito ↗</button></div>
+<main class="reading" id="leitura" tabindex="-1">
+  <section class="reading-intro" id="mesa"><span class="eyebrow">DESIGN, CAFÉ E UM POUCO DE IA.</span><h1>Vem conhecer meu trabalho</h1><p>Sou Lucas Petry. Designer, educador e curioso por tudo que conecta boas ideias a experiências de verdade.</p><div class="reading-desk" aria-hidden="true"><img src="assets/v2/plant.webp" alt="" width="800" height="800"><div class="mini-note"><svg class="mini-apple-logo" viewBox="0 0 24 24" aria-hidden="true">
+              <defs>
+                <linearGradient id="appleGlossMini" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#3C3C41"/>
+                  <stop offset=".42" stop-color="#2B2B30"/>
+                  <stop offset=".5" stop-color="#0C0C0E"/>
+                  <stop offset="1" stop-color="#18181B"/>
+                </linearGradient>
+              </defs>
+              <path fill="url(#appleGlossMini)" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>
+            </svg></div><img src="assets/img/cafe.webp" alt="" width="660" height="612"></div><a class="text-link" href="#projetos">Explore os projetos ↓</a></section>
+  <section id="projetos" class="reading-projects"><span class="eyebrow">01 / EXPLORAÇÕES CRIATIVAS</span><h2>Ideias fora da tela.</h2><p class="section-description">Uma seleção de conceitos de design. Projetos ilustrativos, por enquanto.</p><div class="project-grid">
+<article class="project-card" style="--bg:#5A6A2E;--fg:#EAC64A"><div class="project-art" data-art="0" aria-hidden="true"><span>TORRA</span></div><div class="project-card-info"><span>Branding e site · Conceito</span><h3>TORRA</h3><p>Marca de café especial. Identidade, embalagem e site.</p><button data-project="0">Explorar conceito <span aria-hidden="true">↗</span></button></div></article>
+<article class="project-card" style="--bg:#F1E9DA;--fg:#17171B"><div class="project-art" data-art="1" aria-hidden="true"><span>FORME</span></div><div class="project-card-info"><span>Web e 3D · Conceito</span><h3>FORME</h3><p>Estúdio de mobiliário modular. Homepage com exploded view 3D.</p><button data-project="1">Explorar conceito <span aria-hidden="true">↗</span></button></div></article>
+<article class="project-card" style="--bg:#2A0E24;--fg:#FF7BC0"><div class="project-art" data-art="2" aria-hidden="true"><span>Âmago</span></div><div class="project-card-info"><span>Web imersiva · Conceito</span><h3>Âmago</h3><p>Perfume de nicho. Um mundo navegável por scroll.</p><button data-project="2">Explorar conceito <span aria-hidden="true">↗</span></button></div></article>
+<article class="project-card" style="--bg:#2743E0;--fg:#FFF3DF"><div class="project-art" data-art="3" aria-hidden="true"><span>Visit New York</span></div><div class="project-card-info"><span>Web e 3D · Conceito</span><h3>Visit New York</h3><p>Landing de companhia aérea com Nova York em 3D.</p><button data-project="3">Explorar conceito <span aria-hidden="true">↗</span></button></div></article>
+<article class="project-card" style="--bg:#FFD23F;--fg:#17171B"><div class="project-art" data-art="4" aria-hidden="true"><span>Trato</span></div><div class="project-card-info"><span>Produto e web · Conceito</span><h3>Trato</h3><p>App de produtividade. Homepage e sistema de design.</p><button data-project="4">Explorar conceito <span aria-hidden="true">↗</span></button></div></article>
+<article class="project-card" style="--bg:#17171B;--fg:#D6B36A"><div class="project-art" data-art="5" aria-hidden="true"><span>Tempus</span></div><div class="project-card-info"><span>Branding e loja · Conceito</span><h3>Tempus</h3><p>Relojoaria de luxo. Branding e e-commerce.</p><button data-project="5">Explorar conceito <span aria-hidden="true">↗</span></button></div></article>
+</div></section>
+  <section id="historia" class="reading-about"><div><span class="eyebrow">02 / POR TRÁS DAS IDEIAS</span><h2>Curiosidade<br>é meu ponto<br>de partida.</h2><p>Comecei no marketing. Entre sites, identidades e estratégias, encontrei no design a minha forma de conectar ideias e pessoas.</p><p>Hoje, sou designer e instrutor de Vibe Design na Asimov Academy. Ensino a transformar possibilidades da IA em projetos com intenção.</p><span class="about-signature">Lucas Petry.</span></div><figure><img src="assets/img/foto-perfil.webp" alt="Lucas Petry" width="500" height="500" loading="lazy"><figcaption>Designer, em Porto Alegre.</figcaption></figure></section>
+<section id="atelie" class="reading-atelier"><span class="eyebrow">04 / ALÉM DA TELA</span><h2>Outros ângulos.</h2><div class="atelier-summary"><article><small>01 / O CARTÃO</small><h3>Prazer, Lucas.</h3><p>Designer e instrutor de Vibe Design na Asimov Academy. Design para dar forma às ideias, educação para compartilhar o processo e IA para explorar possibilidades.</p></article><article><small>02 / A MINIATURA</small><h3>Esta mesa também é um projeto.</h3><p>A madeira conecta o cenário. Imagens e planos em CSS 3D dão volume aos objetos. O scroll conduz a câmera, enquanto texto e controles continuam acessíveis em HTML.</p><p>No modo 3D, uma miniatura permite girar e separar essas camadas para ver como elas se relacionam.</p></article></div></section>
+  <section id="contato" class="reading-contact"><span class="eyebrow">03 / A PRÓXIMA IDEIA</span><h2>Começa com<br>um oi<span>.</span></h2><a href="mailto:lucas@asimov.academy">lucas@asimov.academy <span aria-hidden="true">↗</span></a><p>Design, uma colaboração ou só uma boa conversa.</p><small>Lucas Petry © 2026 · Feito com intenção.</small></section>
+</main>
+<dialog id="projectDialog" aria-labelledby="dialogTitle"><button class="dialog-close" aria-label="Fechar projeto" autofocus>×</button><div class="dialog-art" aria-hidden="true"></div><div class="dialog-copy"><span class="eyebrow">EXPLORAÇÃO CRIATIVA / CONCEITO</span><h2 id="dialogTitle"></h2><p id="dialogDescription"></p><span class="dialog-meta"></span><p class="concept-note">Este é um projeto ilustrativo. O case completo entra aqui em breve.</p><a href="mailto:lucas@asimov.academy">Vamos criar algo assim? ↗</a></div></dialog>
+<noscript><style>.stage,.hero-copy,.scroller,.view-controls,.gallery-controls,.vignette,.grain{display:none!important}.reading{display:block!important}.dock{position:sticky;bottom:16px}.site-header{position:relative}</style></noscript>
+<script src="content-v2.js" defer></script>
+<script src="experience-v2.js?v=discoveries-1" defer></script>
+<script src="desk-discoveries.js" defer></script>
+<script src="scene-v2.js?v=discoveries-1" defer></script>
+</body>
+</html>

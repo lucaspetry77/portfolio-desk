@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-desk="wood">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lucas — portfólio</title>
+<meta name="description" content="Design, marketing e IA. Senta aí: os trabalhos estão dentro do note.">
+<meta name="theme-color" content="#2A0E1F">
+<meta property="og:title" content="Lucas — portfólio">
+<meta property="og:description" content="Design, marketing e IA. Senta aí: os trabalhos estão dentro do note.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F45A2E'/%3E%3Crect x='14' y='18' width='36' height='26' rx='4' fill='%2317171B'/%3E%3Crect x='9' y='44' width='46' height='5' rx='2.5' fill='%2325252B'/%3E%3C/svg%3E">
+<link rel="preload" href="assets/fonts/bricolage-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/img/costela-adao.webp" as="image">
+<link rel="preload" href="assets/img/fone.webp" as="image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Shadows+Into+Light&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="stage" id="stage">
+  <div class="world" id="world">
+    <div class="desk" id="desk">
+      <!-- ladrilhos da mesa injetados via JS (.tile) -->
+
+      <!-- post-it na mesa -->
+      <div class="obj obj-sticker" data-rot="-5" data-dx="0" data-dy="-340" data-drot="4">
+        <div class="obj-in" style="--i:0">
+          <div class="postit">
+            <span class="l1">Mesa de</span>
+            <span class="l2">Lucas Petry</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- terço -->
+      <div class="obj obj-terco" data-rot="-10" data-dx="200" data-dy="-340" data-drot="-16">
+        <div class="obj-in" style="--i:8">
+          <img src="assets/img/terco.webp" width="340" height="352" alt="" loading="eager" decoding="async">
+        </div>
+      </div>
+
+      <!-- planta (costela de adão) -->
+      <div class="obj obj-plant" data-dx="-900" data-dy="-260" data-drot="-30">
+        <div class="obj-in" style="--i:1">
+          <img src="assets/img/costela-adao.webp" width="1254" height="1254" alt="" loading="eager" decoding="async">
+        </div>
+      </div>
+
+      <!-- café -->
+      <div class="obj obj-cafe" data-rot="-6" data-dx="900" data-dy="-300" data-drot="28">
+        <div class="obj-in" style="--i:2">
+          <img src="assets/img/cafe.webp" width="660" height="612" alt="" loading="eager" decoding="async">
+        </div>
+      </div>
+
+      <!-- fone -->
+      <div class="obj obj-fone" data-rot="-6" data-dx="950" data-dy="-300" data-drot="28">
+        <div class="obj-in" style="--i:7">
+          <img src="assets/img/fone.webp" width="547" height="486" alt="" loading="eager" decoding="async">
+        </div>
+      </div>
+
+      <!-- caderno (3D de verdade: contracapa, miolo de páginas, capa com dobradiça na lombada) -->
+      <div class="obj obj-caderno" data-rot="-7" data-dx="-820" data-dy="520" data-drot="-22" data-alinha="irCaderno">
+        <div class="obj-in obj-3d" style="--i:3">
+          <div class="caderno" id="caderno">
+            <div class="contracapa"></div>
+            <div class="miolo" id="miolo"><!-- .pagina geradas via JS a partir de HISTORIA --></div>
+            <div class="capa" id="capa">
+              <div class="capa-fora"><i class="elastico" id="elastico"></i></div>
+              <div class="capa-dentro"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- caneta -->
+      <div class="obj obj-caneta" data-rot="-7" data-dx="-820" data-dy="520" data-drot="-22">
+        <div class="obj-in" style="--i:9">
+          <img src="assets/img/caneta.webp" width="130" height="1312" alt="" loading="eager" decoding="async">
+        </div>
+      </div>
+
+      <!-- celular (tela pra cima; acende e vira a moldura do chat) -->
+      <div class="obj obj-celular" data-rot="9" data-dx="900" data-dy="520" data-drot="26" data-alinha="irCelular">
+        <div class="obj-in obj-3d" style="--i:4">
+          <div class="phone" id="phone">
+            <!-- fatias de espessura injetadas via JS (.slab) -->
+            <div class="phone-top">
+              <div class="phone-screen">
+                <div class="tela-on" id="telaOn">
+                  <div class="lock" id="lock">
+                    <div class="lock-hora" id="lockHora">--:--</div>
+                    <div class="lock-data" id="lockData"></div>
+                    <div class="notif" id="notif">
+                      <i class="notif-icone">L</i>
+                      <div class="notif-txt"><b>Lucas</b><span>agora</span><p>curtiu? me chama</p></div>
+                    </div>
+                  </div>
+                  <div class="chat" id="chat">
+                    <div class="chat-head"><i class="avatar">L</i><b>Lucas</b></div>
+                    <div class="bolhas">
+                      <div class="bolha" id="bolha1">curtiu?</div>
+                      <div class="bolha" id="bolha2">me chama</div>
+                    </div>
+                    <form class="campo" id="campo" autocomplete="off">
+                      <input id="msg" type="text" placeholder="Mensagem" aria-label="Mensagem" maxlength="500">
+                      <button type="submit" aria-label="Enviar">
+                        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M3.5 7.5L8 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </button>
+                    </form>
+                  </div>
+                </div>
+                <i class="ilha"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- dica de scroll -->
+      <div class="obj obj-hint" data-dx="0" data-dy="360" data-volta="nao">
+        <div class="obj-in" style="--i:5">
+          role pra abrir
+          <svg width="40" height="24" viewBox="0 0 40 24" aria-hidden="true"><path d="M4 4l16 14L36 4" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <!-- ===== MacBook (100% CSS 3D) ===== -->
+      <div class="laptop" id="laptop">
+        <div class="laptop-shadow laptop-shadow-soft"></div>
+        <div class="laptop-shadow laptop-shadow-contact"></div>
+
+        <div class="base" id="base">
+          <!-- fatias de espessura injetadas via JS (.slab) -->
+          <div class="base-top">
+            <div class="speaker speaker-l"></div>
+            <div class="speaker speaker-r"></div>
+            <div class="kb" id="kb"></div>
+            <div class="trackpad"></div>
+            <i class="lip"></i>
+            <div class="base-shade" id="baseShade"></div>
+            <div class="screen-glow" id="screenGlow"></div>
+          </div>
+        </div>
+
+        <div class="lid" id="lid">
+          <div class="lid-inner">
+            <div class="display" id="display">
+              <div class="strip" id="strip"></div>
+              <div class="intro" id="intro">
+                <div class="curtain curtain-l"></div>
+                <div class="curtain curtain-r"></div>
+                <div class="stage-floor" aria-hidden="true"></div>
+                <div class="stage-light" aria-hidden="true"></div>
+                <div class="intro-vignette" aria-hidden="true"></div>
+                <div class="valance" aria-hidden="true"></div>
+                <div class="intro-txt">
+                  <h3>Bora conhecer meu portfólio?</h3>
+                  <p>Separei meus principais trabalhos pra você dar uma olhada. Continue rolando.</p>
+                </div>
+              </div>
+              <div class="progress" id="progress"></div>
+              <div class="flash" id="flash"></div>
+              <div class="reflection" id="reflection"></div>
+            </div>
+            <div class="notch"><i class="cam"></i><i class="led"></i></div>
+            <div class="glass" id="glass"></div>
+          </div>
+          <div class="lid-outer">
+            <svg class="apple-logo" viewBox="0 0 24 24" aria-hidden="true">
+              <defs>
+                <linearGradient id="appleGloss" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#3C3C41"/>
+                  <stop offset=".42" stop-color="#2B2B30"/>
+                  <stop offset=".5" stop-color="#0C0C0E"/>
+                  <stop offset="1" stop-color="#18181B"/>
+                </linearGradient>
+              </defs>
+              <path fill="url(#appleGloss)" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>
+            </svg>
+            <div class="lid-sheen" id="lidSheen"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="night" id="night" aria-hidden="true"></div>
+</div>
+
+<div class="vignette" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="scroller" id="scroller"></div>
+
+<script src="content.js"></script>
+<script src="scene.js"></script>
+<script src="curtain.js" defer></script>
+</body>
+</html>

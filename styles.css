@@ -1,0 +1,611 @@
+/* =========================================================
+   TOKENS
+   ========================================================= */
+:root{
+  --desk:#F45A2E; --desk-hi:#FF7C50; --desk-lo:#D9491F; --desk-far:#7A2510;
+  --wall:#2A0E1F; --wall-hi:#4A1428;
+  --cream:#FFF3DF; --cobalt:#2743E0; --butter:#FFD23F; --pink:#FF4FA7;
+  --graphite:#17171B; --graphite-2:#25252B; --bezel:#0B0B0E;
+  --shadow:rgba(80,18,0,.38);
+  --hint:#B9B0A4;
+
+  /* MacBook Pro 14" Space Black — 3.2 px/mm */
+  --alu:#1C1C1F; --alu-hi:#2A2A2E; --alu-lo:#131316; --alu-edge:#101013;
+  --well:#050506; --keycap:#0E0E10; --keycap-hi:#17171A; --legend:rgba(255,255,255,.72);
+  --glass:#202024;
+  --base-t:32px; --lid-t:14px; --corner:28px;
+
+  /* fator de rasterizacao da mesa: os ladrilhos sao pintados em --k da resolucao e
+     ampliados por scale(1/--k). O compositor guarda 1/k^2 da textura. Ver CFG.deskRaster. */
+  --k:.5;
+
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --ease-settle:cubic-bezier(.2,.7,.2,1);
+}
+
+@font-face{
+  font-family:"Bricolage Grotesque";font-style:normal;font-weight:200 800;font-display:swap;
+  src:url(assets/fonts/bricolage-latin.woff2) format("woff2");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face{
+  font-family:"Bricolage Grotesque";font-style:normal;font-weight:200 800;font-display:swap;
+  src:url(assets/fonts/bricolage-latin-ext.woff2) format("woff2");
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{scroll-behavior:auto}
+body{
+  background:var(--wall);color:var(--cream);
+  font-family:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  font-optical-sizing:auto;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+}
+a{color:inherit}
+a:focus-visible{outline:3px solid currentColor;outline-offset:6px;border-radius:4px}
+img{display:block;max-width:100%;height:auto}
+
+/* altura do scroll definida via JS (soma dos segmentos em CFG.segs) */
+.scroller{position:relative;width:100%;pointer-events:none}
+
+/* =========================================================
+   PALCO (câmera) + MUNDO (mesa)
+   ========================================================= */
+.stage{
+  position:fixed;top:0;left:0;width:100%;height:100vh;height:100lvh;overflow:hidden;
+  perspective:2000px;perspective-origin:50% 50%;
+}
+.world{
+  position:absolute;width:4800px;height:2800px;
+  transform-style:preserve-3d;will-change:transform;
+}
+.desk{position:absolute;inset:0;transform-style:preserve-3d}
+
+/* A mesa é pintada em ladrilhos (.tile, gerados em scene.js): camadas pequenas, com culling por frame.
+   Cada ladrilho carrega os mesmos gradientes com background-size = mesa inteira e position = -x -y,
+   então a pintura é contínua. Dentro do preserve-3d o will-change NÃO controla a escala de
+   rasterização (medido: as camadas saem em 1:1 do px CSS com ou sem ele) — quem controla é --k. */
+.tile{
+  position:absolute;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  transform-origin:0 0;
+  background-image:
+    linear-gradient(180deg,var(--desk-far) 0%,rgba(122,37,16,.6) 14%,rgba(122,37,16,0) 34%),
+    radial-gradient(60% 45% at 50% 55%,var(--desk-hi) 0%,var(--desk) 48%,var(--desk-lo) 100%);
+  background-size:calc(4800px*var(--k)) calc(2800px*var(--k)),calc(4800px*var(--k)) calc(2800px*var(--k));
+  background-repeat:no-repeat,no-repeat;
+}
+/* horizonte 2D: a parede e a "mesa distante" atrás do plano 3D (a mesa 3D some pra longe ao tombar) */
+.stage{background:linear-gradient(180deg,var(--wall) 0%,var(--wall) 9%,var(--desk-far) 27%,var(--desk-far) 100%)}
+
+/* mesa de madeira (assets/img/mesa.webp, tile espelhado 3344×1882): <html data-desk="wood"> */
+html[data-desk="wood"]{--shadow:rgba(35,16,4,.5);--wall:#1E0F0C;--desk-far:#221109}
+html[data-desk="wood"] .tile{
+  background-image:
+    linear-gradient(180deg,rgba(28,10,4,.96) 0%,rgba(28,10,4,.6) 13%,rgba(28,10,4,0) 34%),
+    radial-gradient(62% 45% at 50% 55%,rgba(255,214,170,.12) 0%,rgba(0,0,0,0) 45%,rgba(20,8,2,.38) 100%),
+    url(assets/img/mesa.webp);
+  background-size:calc(4800px*var(--k)) calc(2800px*var(--k)),calc(4800px*var(--k)) calc(2800px*var(--k)),calc(3344px*var(--k)) calc(1882px*var(--k));
+  background-repeat:no-repeat,no-repeat,repeat;
+}
+
+/* camadas fixas fora da árvore 3D */
+.vignette{
+  position:fixed;inset:0;pointer-events:none;z-index:4;
+  background:radial-gradient(120% 90% at 50% 45%,transparent 55%,rgba(20,4,10,.55) 100%);
+}
+.grain{
+  position:fixed;inset:0;pointer-events:none;z-index:5;opacity:.05;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .8 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* =========================================================
+   OBJETOS NA MESA (recortes PNG/WebP com alpha)
+   ========================================================= */
+.obj{position:absolute;will-change:transform,opacity}
+.obj-in{
+  filter:drop-shadow(14px 30px 24px var(--shadow));
+  animation:settle .9s var(--ease-settle) both;
+  animation-delay:calc(var(--i) * 90ms);
+}
+@keyframes settle{
+  from{opacity:0;transform:translateY(28px) scale(.96)}
+  to{opacity:1;transform:none}
+}
+
+/* post-it colado na mesa (sem sombra de objeto: a sombra é a do próprio papel) */
+.obj-sticker{left:2275px;top:900px}
+.obj-sticker .obj-in{filter:none}
+.postit{
+  position:relative;width:168px;padding:18px 16px 14px;
+  background:linear-gradient(160deg,#FFF4B8,#FFE359 75%,#FFDB3D);
+  color:#22304A;font-family:"Shadows Into Light",cursive;font-weight:400;
+  font-size:29px;line-height:1.2;letter-spacing:.01em;
+  box-shadow:2px 6px 12px rgba(40,20,5,.28),0 1px 0 rgba(255,255,255,.5) inset;
+}
+.postit .l1,.postit .l2{display:block}
+.postit .l1{transform:rotate(-2deg)}
+.postit .l2{transform:rotate(1.3deg);margin-top:.08em}
+.postit::after{
+  content:"";position:absolute;right:0;bottom:0;width:14px;height:14px;
+  background:linear-gradient(135deg,transparent 50%,rgba(0,0,0,.14) 51%),#FFE359;
+}
+.obj-hint{left:2400px;top:2460px;width:420px;margin-left:-210px;text-align:center}
+.obj-hint .obj-in{filter:none;color:var(--hint);font-size:40px;font-weight:600;letter-spacing:-.01em}
+.obj-hint svg{display:block;margin:10px auto 0;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(12px)}}
+
+.obj-plant  {left:1050px;top:1330px;width:400px}
+.obj-cafe   {left:3090px;top:1500px;width:220px}
+.obj-fone   {left:3420px;top:1520px;width:185px}
+.obj-terco  {left:2480px;top:890px;width:120px}
+.obj-caderno{left:1250px;top:2070px;width:300px;height:440px}
+.obj-caneta {left:1590px;top:2158px;width:26px}
+.obj-celular{left:3210px;top:1860px;width:260px;height:540px}
+.obj img{width:100%}
+
+/* portrait: reorganiza a mesa em torno do note (fallback até a variante "celular na mesa") */
+@media (orientation:portrait){
+  .obj-sticker{left:2300px;top:170px}
+  .postit{width:140px;padding:14px 13px 11px;font-size:24px}
+  .obj-plant  {left:1760px;top:780px;width:330px}
+  .obj-cafe   {left:2750px;top:880px;width:170px}
+  .obj-fone   {left:2960px;top:900px;width:130px}
+  .obj-terco  {left:2470px;top:180px;width:100px}
+  .obj-caderno{left:1760px;top:2160px}
+  .obj-caneta {left:2100px;top:2248px;width:26px}
+  .obj-celular{left:2760px;top:2100px}
+  .obj-hint{top:2650px}
+}
+
+/* =========================================================
+   MacBook Pro 14" — CSS 3D
+   Dimensões em px da mesa (3.2 px/mm): 1000 × 708, base 32, tampa 14.
+   ========================================================= */
+.laptop{
+  position:absolute;left:1900px;top:1400px;width:1000px;height:708px;
+  transform-style:preserve-3d;
+}
+.laptop-shadow{position:absolute;border-radius:60px;pointer-events:none}
+.laptop-shadow-soft{
+  inset:-30px -50px -70px -30px;background:rgba(70,14,0,.55);filter:blur(40px);
+  transform:translate3d(18px,26px,.5px);
+}
+.laptop-shadow-contact{
+  inset:-4px -6px -10px -4px;background:rgba(50,8,0,.6);filter:blur(10px);
+  transform:translate3d(3px,5px,.6px);
+}
+
+/* --- espessura: só fatias paralelas (.slab, geradas em scene.js). Sem faces perpendiculares:
+   planos que se cruzam obrigam o compositor a fatiar polígonos a cada frame e isso pisca. --- */
+.slab{position:absolute;inset:0;border-radius:var(--corner);background:var(--alu-edge)}
+.slab-top{background:#151518}
+
+/* --- topo da base --- */
+.base{position:absolute;inset:0;transform-style:preserve-3d}
+.base-top{
+  position:absolute;inset:0;border-radius:var(--corner);
+  transform:translateZ(var(--base-t));
+  background:
+    linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,0) 45%,rgba(0,0,0,.18)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.012) 0 1px,rgba(0,0,0,.012) 1px 3px),
+    linear-gradient(180deg,var(--alu-hi),var(--alu) 30%,var(--alu-lo));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),inset 0 2px 0 rgba(255,255,255,.1),inset -1px -2px 0 rgba(0,0,0,.55);
+  overflow:hidden;
+}
+.speaker{
+  position:absolute;top:44px;width:34px;height:350px;border-radius:2px;
+  background:radial-gradient(circle at 50% 50%,#08080A 0 .9px,transparent 1.4px) 0 0/4px 4px;
+  opacity:.9;
+}
+.speaker-l{left:18px}.speaker-r{right:18px}
+
+.kb{
+  position:absolute;left:65px;top:36px;width:870px;height:359px;border-radius:7px;
+  background:var(--well);box-shadow:inset 0 1px 2px rgba(0,0,0,.9),inset 0 0 0 1px rgba(255,255,255,.025);
+}
+.key{
+  position:absolute;border-radius:5px;background:linear-gradient(180deg,var(--keycap-hi),var(--keycap) 55%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 1px 0 rgba(0,0,0,.8);
+  color:var(--legend);
+  font:500 15px/1 -apple-system,"SF Pro Text","Helvetica Neue",Inter,system-ui,sans-serif;
+  display:flex;align-items:center;justify-content:center;
+}
+.key-top{position:absolute;left:0;right:0;top:8px;text-align:center;font-size:10px;opacity:.9}
+.key.has-top{align-items:flex-end;padding-bottom:9px}
+.key-lbl{position:absolute;left:0;right:0;bottom:7px;text-align:center;font-size:9px;letter-spacing:.01em}
+.key-sym{position:absolute;right:7px;top:6px;font-size:11px}
+.key-fn{font-size:9px;align-items:flex-end;padding-bottom:6px}
+.key-fn::before{content:"";position:absolute;top:11px;left:50%;width:9px;height:9px;margin-left:-4.5px;border-radius:50%;border:1.2px solid rgba(255,255,255,.45)}
+.key-touch{background:#0A0A0C;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.key-touch::before{content:"";width:22px;height:22px;border-radius:50%;background:radial-gradient(circle,#0A0A0C 55%,#232327 58%,#0A0A0C 62%)}
+.key-enter-top{border-radius:5px 5px 0 5px}
+.key-enter-bot{border-radius:0 0 5px 5px;box-shadow:0 1px 0 rgba(0,0,0,.8)}
+.key-arrow{font-size:8px}
+.key-half{height:22px !important}
+
+.trackpad{
+  position:absolute;left:292px;top:420px;width:416px;height:262px;border-radius:9px;
+  background:linear-gradient(165deg,#25252A,#1E1E22 60%,#1B1B1F);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.055),inset 0 1px 0 rgba(255,255,255,.05),0 0 0 1px rgba(0,0,0,.4);
+}
+.lip{
+  position:absolute;left:50%;bottom:0;width:150px;height:9px;margin-left:-75px;
+  border-radius:7px 7px 0 0;background:#0A0A0C;
+  box-shadow:inset 0 1px 0 rgba(0,0,0,.9),inset 0 2px 0 rgba(255,255,255,.04);
+}
+.base-shade{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,0,0,.75),rgba(0,0,0,.35) 18%,rgba(0,0,0,0) 52%);
+  opacity:0;
+}
+.screen-glow{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,var(--glow,#fff) 0%,transparent 60%);
+  opacity:0;
+}
+
+/* --- tampa --- */
+.lid{
+  position:absolute;left:0;top:0;width:1000px;height:708px;
+  transform-origin:50% 0 0;transform-style:preserve-3d;will-change:transform;
+}
+.lid .slab{background:#0F0F12}
+/* lado de fora: alumínio space black com adesivos */
+.lid-outer{
+  position:absolute;inset:0;border-radius:var(--corner);overflow:hidden;
+  transform:translateZ(var(--lid-t));
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  background:
+    linear-gradient(155deg,rgba(255,255,255,.07),rgba(255,255,255,0) 40%,rgba(0,0,0,.22) 100%),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.012) 0 1px,rgba(0,0,0,.012) 1px 3px),
+    linear-gradient(180deg,#26262A,#1B1B1E 45%,#151518);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),inset 0 2px 0 rgba(255,255,255,.12),inset 2px 0 0 rgba(255,255,255,.05),inset -1px -2px 0 rgba(0,0,0,.55);
+}
+.lid-outer::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 80% at 28% 8%,rgba(255,255,255,.075),rgba(255,255,255,0) 55%);
+}
+.lid-sheen{
+  position:absolute;inset:0;pointer-events:none;opacity:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.03) 40%,rgba(0,0,0,.25));
+}
+/* maçã no centro da tampa (~47 mm de altura a 3.2 px/mm). Rotacionada 180°: é assim que
+   fica de verdade num MacBook fechado, visto por quem vai abrir (a posição do visitante aqui). */
+.apple-logo{
+  position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;
+  transform:rotate(180deg);
+  filter:drop-shadow(0 0 .6px rgba(255,255,255,.18)) drop-shadow(0 1px 1px rgba(0,0,0,.35));
+}
+
+/* lado de dentro: bezel preto + display + notch.
+   rotateX(180) é o que faz a tela ficar de pé quando tampa (110°) + câmera (70°) somam 180°. */
+.lid-inner{
+  position:absolute;inset:0;border-radius:var(--corner);overflow:hidden;
+  transform:rotateX(180deg);
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  background:linear-gradient(180deg,#0D0D10,#08080A);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
+}
+.display{
+  position:absolute;left:16px;top:14px;width:968px;height:629px;
+  border-radius:12px 12px 0 0;overflow:hidden;background:#000;
+}
+.notch{
+  position:absolute;left:50%;top:0;width:92px;height:12px;margin-left:-46px;
+  border-radius:0 0 5px 5px;background:#08080A;z-index:3;
+}
+.notch .cam{position:absolute;left:50%;top:4px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:#1A2430;box-shadow:inset 0 0 0 1.5px #0E141B,0 0 0 1px #131316}
+.notch .led{position:absolute;left:50%;top:6px;width:2px;height:2px;margin-left:8px;border-radius:50%;background:#1D2A1F}
+.glass{
+  position:absolute;inset:0;pointer-events:none;border-radius:var(--corner);
+  background:linear-gradient(200deg,rgba(255,255,255,.07),rgba(255,255,255,.02) 30%,rgba(255,255,255,0) 50%,rgba(255,255,255,.025) 100%);
+  opacity:1;
+}
+
+/* --- conteúdo da tela --- */
+.strip{position:absolute;inset:0;display:flex;flex-wrap:nowrap;will-change:transform;opacity:0}
+
+/* --- intro: cortina de teatro, abre puxada pelo scroll (sem clique) --- */
+.intro{position:absolute;inset:0;overflow:hidden;opacity:0;pointer-events:none}
+.curtain{
+  position:absolute;top:0;bottom:0;width:52%;z-index:1;
+  background:
+    repeating-linear-gradient(90deg,rgba(0,0,0,.28) 0 10px,rgba(255,255,255,.05) 10px 13px,transparent 13px 34px),
+    linear-gradient(180deg,#8A1224,#5C0C18 55%,#3E0810);
+  animation:curtain-sway 5s ease-in-out infinite alternate;   /* fallback também balança: pregas deslizam */
+}
+@keyframes curtain-sway{from{background-position:0 0,0 0}to{background-position:34px 0,0 0}}
+.curtain-l{left:0;box-shadow:inset -36px 0 50px rgba(0,0,0,.45)}
+.curtain-r{right:0;box-shadow:inset 36px 0 50px rgba(0,0,0,.45)}
+.curtain::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:46px;
+  background:linear-gradient(180deg,rgba(0,0,0,.5),transparent);
+}
+/* pano em WebGL (curtain.js) cobre a cortina CSS; sem ele, a CSS acima segue sozinha.
+   scene.js escreve translateX inline a cada frame, puxado pelo scroll (--g em #intro). */
+.curtain-gl{position:absolute;inset:0;width:100%;height:100%;z-index:1;display:block;pointer-events:none}
+.intro.gl .curtain{display:none}
+/* palco: chão escuro, luz quente com flicker, vinheta — a opacity vem inline (scene.js), puxada pelo scroll */
+.stage-floor,.stage-light,.intro-vignette{position:absolute;z-index:2;pointer-events:none}
+.stage-floor{left:0;right:0;bottom:0;height:120px;background:linear-gradient(180deg,transparent,rgba(0,0,0,.5) 70%,rgba(0,0,0,.65))}
+.stage-light{
+  inset:0;
+  background:radial-gradient(58% 52% at 50% 44%,rgba(255,214,160,.20),rgba(255,214,160,.07) 45%,transparent 72%);
+  animation:stage-flicker 4.5s ease-in-out infinite;
+}
+@keyframes stage-flicker{0%,100%{opacity:.9}37%{opacity:1}63%{opacity:.82}}
+.intro-vignette{inset:0;background:radial-gradient(115% 90% at 50% 50%,transparent 55%,rgba(0,0,0,.42))}
+/* bandô: sanefa com pregas suaves, galão e franja dourados; sobe (inline, scene.js) quando a pilha sai do quadro */
+.valance{
+  position:absolute;left:-2px;right:-2px;top:0;height:64px;z-index:2;pointer-events:none;
+  background:
+    repeating-linear-gradient(90deg,rgba(0,0,0,.22) 0 8px,rgba(255,255,255,.05) 8px 12px,rgba(0,0,0,0) 12px 30px) 0 0/100% 44px no-repeat,
+    linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,0) 45%) 0 0/100% 44px no-repeat,
+    linear-gradient(180deg,#6E1022 0,#560B18 44px,transparent 44px);
+  filter:drop-shadow(0 8px 10px rgba(0,0,0,.55));
+}
+.valance::before{  /* galão */
+  content:"";position:absolute;left:0;right:0;top:42px;height:5px;
+  background:linear-gradient(180deg,#A8843A,#F0D27A 45%,#C9A24A 80%,#7A5E24);
+}
+.valance::after{   /* franja */
+  content:"";position:absolute;left:0;right:0;top:47px;height:17px;
+  background:repeating-linear-gradient(90deg,#D9B65A 0 1.5px,transparent 1.5px 4.5px);
+  -webkit-mask:linear-gradient(180deg,#000 40%,transparent);mask:linear-gradient(180deg,#000 40%,transparent);
+}
+/* título e subtítulo: centralizados na tela do note; somem (inline, scene.js) assim que o scroll puxa o pano */
+.intro-txt{
+  position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:0 70px;
+  color:#FFF3DF;text-shadow:0 2px 6px rgba(0,0,0,.35),0 8px 30px rgba(0,0,0,.5);
+}
+.intro-txt h3{margin:0;font-size:60px;font-weight:800;letter-spacing:-.03em;line-height:1.06}
+.intro-txt p{margin:18px 0 0;font-size:22px;font-weight:500;line-height:1.3;max-width:30ch;opacity:.85}
+.slide{
+  flex:0 0 100%;height:100%;
+  display:grid;grid-template-columns:1.05fr 1fr;gap:36px;
+  padding:56px 40px 36px;
+  background:var(--bg);color:var(--fg);
+}
+.slide-txt{display:flex;flex-direction:column;justify-content:flex-end;min-width:0}
+.slide .num{margin-bottom:auto;font-size:14px;font-weight:600;letter-spacing:.04em;opacity:.7}
+.slide h2{margin:0;font-size:68px;font-weight:800;line-height:.92;letter-spacing:-.04em;overflow-wrap:anywhere}
+.slide h2 a{text-decoration:none}
+@media (hover:hover) and (pointer:fine){
+  .slide h2 a:hover{text-decoration:underline;text-decoration-thickness:.06em;text-underline-offset:.08em}
+}
+.slide p{margin:18px 0 0;font-size:21px;line-height:1.3;font-weight:500;max-width:34ch}
+.slide .meta{margin-top:auto;padding-top:22px;font-size:14px;font-weight:600;opacity:.8}
+.slide-capa{position:relative;border-radius:18px;overflow:hidden;background:var(--capa)}
+.slide-capa span{
+  position:absolute;right:-14px;bottom:-70px;
+  font-size:380px;font-weight:800;line-height:1;letter-spacing:-.06em;opacity:.9;
+}
+.progress{
+  position:absolute;left:0;right:0;bottom:0;height:3px;z-index:2;
+  background:var(--cream);transform-origin:0 50%;transform:scaleX(0);
+}
+.flash{position:absolute;inset:0;z-index:4;background:var(--cream);opacity:0;pointer-events:none}
+.reflection{
+  position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;
+  background:
+    linear-gradient(200deg,rgba(255,243,223,.05),rgba(255,243,223,0) 40%),
+    linear-gradient(0deg,rgba(244,90,46,.30),rgba(244,90,46,.06) 40%,rgba(244,90,46,0) 62%);
+}
+
+@media (prefers-reduced-motion:reduce){
+  .obj-in{animation:none}
+  .obj-hint svg{animation:none}
+  .notif.pulsa{animation:none}
+  .curtain,.stage-light{animation:none}
+}
+
+
+/* =========================================================
+   OBJETOS 3D (caderno e celular): a cadeia inteira até as faces precisa ser preserve-3d,
+   sem filter / overflow / opacity<1 / clip-path. Sombra via box-shadow na peça de baixo.
+   ========================================================= */
+.obj-caderno,.obj-celular{transform-style:preserve-3d}
+.obj-in.obj-3d{position:relative;height:100%;filter:none;transform-style:preserve-3d} /* altura explícita: .obj-in tem transform e vira o containing block dos filhos com inset:0 */
+
+/* --- caderno (300×440 na mesa; ~94×137 mm) --- */
+.caderno{position:absolute;inset:0;transform-style:preserve-3d}
+.contracapa{ /* só a face de dentro aparece (quando todas as páginas viraram): guarda cream */
+  position:absolute;inset:0;border-radius:4px 14px 14px 4px;
+  box-shadow:14px 30px 24px var(--shadow),0 0 0 1px rgba(0,0,0,.35);
+  background:linear-gradient(90deg,rgba(60,30,10,.18),rgba(60,30,10,0) 10%),#F3E6CF;
+}
+.miolo{position:absolute;inset:0;transform-style:preserve-3d}
+.pagina{
+  position:absolute;left:0;top:4px;width:294px;height:432px;
+  transform-origin:0 50%;transform-style:preserve-3d;will-change:transform;
+}
+.face{
+  position:absolute;inset:0;border-radius:2px 8px 8px 2px;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  color:#2B2320;
+  background:
+    linear-gradient(90deg,rgba(60,30,10,.16),rgba(60,30,10,0) 9%),
+    radial-gradient(rgba(70,45,20,.16) 1px,transparent 1.3px) 7px 7px/14px 14px,
+    #FFF3DF;
+  box-shadow:inset 0 0 0 .5px rgba(80,50,20,.12);
+}
+.verso{transform:rotateY(180deg)}
+.capa{
+  position:absolute;inset:0;transform-origin:0 50%;transform-style:preserve-3d;will-change:transform;
+}
+.capa-fora,.capa-dentro{
+  position:absolute;inset:0;border-radius:4px 14px 14px 4px;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+}
+.capa-fora{
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),inset 1px 1px 0 rgba(255,255,255,.06),3px 4px 8px rgba(35,16,4,.35);
+  background:
+    radial-gradient(90% 60% at 20% 10%,rgba(255,255,255,.05),rgba(255,255,255,0) 60%),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,rgba(0,0,0,0) 1px 3px),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 1px,rgba(0,0,0,.06) 1px 3px),
+    linear-gradient(160deg,#2A2A2E,#1B1B1F 55%,#141417);
+}
+.capa-fora::before{ /* lombada: vinco a ~14px da borda esquerda */
+  content:"";position:absolute;top:0;bottom:0;left:13px;width:2px;
+  background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(255,255,255,.06));
+}
+.elastico{
+  position:absolute;top:-3px;bottom:-3px;right:38px;width:11px;border-radius:2px;
+  background:linear-gradient(90deg,#E4B92F,#FFD23F 40%,#D9AC22);
+  box-shadow:1px 0 2px rgba(0,0,0,.45);
+}
+.capa-dentro{
+  transform:rotateY(180deg);
+  background:linear-gradient(90deg,rgba(60,30,10,.18),rgba(60,30,10,0) 10%),#F3E6CF;
+  box-shadow:inset 0 0 0 1px rgba(80,50,20,.12),-3px 4px 8px rgba(35,16,4,.3);
+}
+
+/* --- itens colados nas páginas --- */
+.colado{position:absolute;box-shadow:2px 3px 6px rgba(40,20,5,.28);transform-origin:50% 50%}
+.fita{
+  position:absolute;width:54px;height:15px;left:50%;top:-7px;margin-left:-27px;
+  background:rgba(255,228,150,.55);box-shadow:0 0 0 .5px rgba(120,90,30,.15);
+  transform:rotate(-4deg);z-index:2;
+}
+.fita-tl{left:6px;margin-left:0;transform:rotate(-38deg)}
+.fita-tr{left:auto;right:-14px;margin-left:0;transform:rotate(40deg)}
+.fita-bl{top:auto;bottom:-6px;left:2px;margin-left:0;transform:rotate(36deg)}
+.fita-br{top:auto;bottom:-6px;left:auto;right:-12px;margin-left:0;transform:rotate(-40deg)}
+
+.nota{
+  box-shadow:none;font-family:Caveat,"Bricolage Grotesque",cursive;font-weight:600;
+  font-size:19px;line-height:1.05;white-space:nowrap;color:#2B2320;
+}
+.nota-p{font-size:15px;font-weight:400;color:#5A4A3E}
+.nota-g{font-size:40px;font-weight:700;line-height:1}
+
+.polaroid{width:118px;padding:7px 7px 22px;background:#FBF8F2;border-radius:2px}
+.polaroid .foto{height:104px;background:linear-gradient(160deg,#C9C2B8,#9E968C);border-radius:1px;background-size:cover;background-position:center}
+.polaroid-wide{width:200px}
+.polaroid-wide .foto{height:118px}
+.polaroid span{
+  position:absolute;left:0;right:0;bottom:4px;text-align:center;
+  font-family:Caveat,cursive;font-size:13px;color:#4A3E36;white-space:nowrap;
+}
+
+.cracha{width:110px;height:180px;box-shadow:none}
+.cracha .cordao{
+  position:absolute;left:50%;top:-30px;width:34px;height:54px;margin-left:-17px;
+  border:5px solid #2743E0;border-bottom:0;border-radius:17px 17px 0 0;
+}
+.cracha-card{
+  position:absolute;left:0;right:0;top:20px;bottom:0;border-radius:8px;background:#FBF8F2;
+  box-shadow:2px 3px 6px rgba(40,20,5,.28);padding:26px 10px 10px;
+  display:flex;flex-direction:column;gap:2px;
+}
+.cracha-card .furo{position:absolute;left:50%;top:8px;width:26px;height:6px;margin-left:-13px;border-radius:3px;background:#DAD2C6}
+.cracha-card b{font-size:16px;font-weight:800;letter-spacing:-.02em;color:#17171B}
+.cracha-card span{font-size:9.5px;font-weight:600;color:#5A4A3E}
+.cracha-card em{margin-top:auto;font-style:normal;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#2743E0}
+.cracha-multi{width:126px;height:196px}
+.cracha-card em.lista{display:flex;flex-direction:column;gap:3px;letter-spacing:.04em;font-size:8px;line-height:1.1}
+.cracha-card em.lista i{font-style:normal;padding:2px 0;border-top:1px solid #E6DED2}
+.rabisco{box-shadow:none;fill:none;stroke:#2B2320;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+
+.cartao{
+  width:150px;height:84px;padding:10px 12px;border-radius:2px;background:#17171B;color:#FFF3DF;
+  display:flex;flex-direction:column;
+}
+.cartao b{font-size:15px;font-weight:800;letter-spacing:-.02em}
+.cartao span{font-size:9px;font-weight:500;opacity:.8}
+.cartao em{margin-top:auto;font-style:normal;font-size:8.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#FFD23F}
+
+.ingresso{
+  width:160px;height:62px;padding:9px 12px 9px 14px;background:#F45A2E;color:#FFF3DF;
+  -webkit-mask:radial-gradient(circle at 0 50%,transparent 6px,#000 6.5px) 0 0/100% 100%,radial-gradient(circle at 100% 50%,transparent 6px,#000 6.5px);
+  -webkit-mask-composite:source-in;mask-composite:intersect;
+  border-left:2px dashed rgba(255,243,223,.5);
+}
+.ingresso b{display:block;font-size:13px;font-weight:800;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ingresso span{display:block;margin-top:4px;font-size:9px;font-weight:600;opacity:.85}
+.ingresso .picote{position:absolute;right:26px;top:4px;bottom:4px;border-left:1.5px dashed rgba(255,243,223,.55)}
+
+.adesivo{
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  background:var(--cor);color:#FFF3DF;font-weight:800;letter-spacing:-.02em;
+  box-shadow:0 0 0 3px #FBF8F2,2px 3px 6px rgba(40,20,5,.28);
+}
+.adesivo-redondo{width:58px;height:58px;border-radius:50%;font-size:26px}
+.adesivo-pill{height:36px;padding:0 16px;border-radius:18px;font-size:14px;white-space:nowrap}
+
+.recorte{
+  width:210px;padding:12px 12px 14px;background:#EFE7D6;color:#2B2320;border-radius:1px;
+  background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.025) 0 1px,transparent 1px 4px);
+}
+.recorte b{display:block;font-size:15px;font-weight:800;line-height:1.05;letter-spacing:-.02em;font-family:Georgia,"Times New Roman",serif}
+.recorte p{margin:6px 0 0;font-size:9.5px;line-height:1.3;font-family:Georgia,"Times New Roman",serif;columns:2;column-gap:8px}
+.recorte .grampo{
+  position:absolute;left:14px;top:-4px;width:16px;height:6px;border:1.5px solid #8C8C90;border-bottom:0;border-radius:2px 2px 0 0;
+  background:linear-gradient(#B8B8BC,#8C8C90);transform:rotate(-8deg);
+}
+
+/* --- celular (260×540 na mesa): corpo grafite, tela preta, ilha da câmera --- */
+.phone{position:absolute;inset:0;transform-style:preserve-3d}
+.phone .slab{border-radius:42px;background:#131316}
+.phone .slab-base{box-shadow:14px 30px 24px var(--shadow)}
+.phone-top{
+  position:absolute;inset:0;border-radius:42px;transform:translateZ(26px);
+  background:linear-gradient(160deg,#2B2B30,#1B1B1F 60%,#141417);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09),inset 0 1px 0 rgba(255,255,255,.08);
+}
+.phone-screen{position:absolute;inset:7px;border-radius:36px;overflow:hidden;background:#000}
+.ilha{position:absolute;left:50%;top:12px;width:86px;height:26px;margin-left:-43px;border-radius:13px;background:#000;z-index:6;box-shadow:0 0 0 1px rgba(255,255,255,.04)}
+.tela-on{
+  position:absolute;inset:0;opacity:0;color:#fff;
+  background:
+    radial-gradient(90% 60% at 30% 0%,rgba(244,90,46,.55),rgba(244,90,46,0) 60%),
+    radial-gradient(80% 50% at 90% 100%,rgba(39,67,224,.5),rgba(39,67,224,0) 60%),
+    linear-gradient(180deg,#1A0D14,#0A0710);
+}
+.lock{position:absolute;inset:0;text-align:center}
+.lock-hora{margin-top:64px;font-size:74px;font-weight:300;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.lock-data{margin-top:8px;font-size:15px;font-weight:600;opacity:.85}
+.notif{
+  position:absolute;left:12px;right:12px;top:214px;padding:12px 14px;border-radius:22px;
+  background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+  display:flex;align-items:center;gap:12px;text-align:left;opacity:0;
+}
+.notif-icone,.avatar{
+  flex:0 0 auto;width:38px;height:38px;border-radius:10px;background:#FFD23F;color:#17171B;
+  display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:800;font-size:20px;
+}
+.avatar{width:32px;height:32px;border-radius:50%;font-size:16px}
+.notif-txt{min-width:0;flex:1}
+.notif-txt b{font-size:14px;font-weight:700}
+.notif-txt span{float:right;font-size:12px;opacity:.6}
+.notif-txt p{margin:2px 0 0;font-size:14px;font-weight:500;line-height:1.2}
+.notif.pulsa{animation:notifPulse .7s var(--ease-out) 1}
+@keyframes notifPulse{0%{transform:scale(1)}30%{transform:scale(1.035)}100%{transform:scale(1)}}
+
+.chat{position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;padding:56px 14px 16px}
+.chat-head{display:flex;align-items:center;gap:10px;padding:6px 4px 14px;border-bottom:1px solid rgba(255,255,255,.1)}
+.chat-head b{font-size:16px;font-weight:700}
+.bolhas{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding-top:18px}
+.bolha{
+  max-width:78%;padding:10px 15px;border-radius:20px;border-bottom-left-radius:6px;
+  background:#2C2C31;font-size:17px;font-weight:500;line-height:1.25;opacity:0;
+}
+.campo{display:flex;gap:8px;margin-top:auto;opacity:0}
+.campo input{
+  flex:1;min-width:0;height:40px;padding:0 16px;border-radius:20px;
+  border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;
+  font:500 16px/1 "Bricolage Grotesque",system-ui,sans-serif;outline:none;
+}
+.campo input::placeholder{color:rgba(255,255,255,.45)}
+.campo input:focus-visible{border-color:rgba(255,255,255,.6)}
+.campo button{
+  flex:0 0 40px;width:40px;height:40px;border-radius:50%;border:0;background:#2743E0;color:#fff;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.campo button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+
+/* --- noite: overlay fixo no .stage, fora da árvore 3D --- */
+.night{position:absolute;inset:0;background:#07030A;opacity:0;visibility:hidden;pointer-events:none;z-index:3}

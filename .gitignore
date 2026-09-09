@@ -1,0 +1,11 @@
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Fontes brutas das imagens (PNG originais, avatar gerado) — ficam só na máquina
+_originais/
+
+# Ferramentas
+node_modules/
+*.log
+.vercel/

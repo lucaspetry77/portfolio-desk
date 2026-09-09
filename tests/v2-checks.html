@@ -1,0 +1,43 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Verificação da versão 2</title><style>body{font:15px/1.6 system-ui;background:#f5f0e6;color:#292720;padding:32px}li{padding:5px}iframe{width:1280px;height:720px;border:1px solid #ccc;position:absolute;left:-15000px} .fail{color:#ac291c}</style><h1>Verificações da V2</h1><p id="status">Executando…</p><ol id="results"></ol><iframe title="Portfólio em teste"></iframe><script>
+(async () => {
+const list=document.querySelector('#results'), frame=document.querySelector('iframe');let passed=0,failed=0;
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const assert=(value,label)=>{const li=document.createElement('li');li.textContent=(value?'PASS — ':'FAIL — ')+label;if(value)passed++;else{failed++;li.className='fail'}list.append(li)};
+const load=()=>new Promise(r=>{frame.onload=r;frame.src='../index-v2.html'});
+const saved=sessionStorage.getItem('portfolio-mode');sessionStorage.setItem('portfolio-mode','3d');
+try {
+await load();await wait(200);let w=frame.contentWindow,d=frame.contentDocument;
+assert(!!w.__scene,'A cena inicializa sem dependências externas');
+assert(d.querySelectorAll('.slide').length===6,'Os seis projetos são criados');
+assert(d.querySelectorAll('.key').length>70,'Teclado tridimensional completo');
+assert(d.querySelectorAll('script[src^="http"],link[href^="http"]').length===0,'Nenhum script ou fonte depende de CDN');
+const api=w.__scene;
+for (const segment of api.segs) for (const progress of [0,.5,1]) {
+api.seek(segment.y0+segment.px*progress);const transform=d.querySelector('#world').style.transform;
+assert(!/NaN|Infinity/.test(transform)&&transform.includes('scale3d'),'Câmera válida: '+segment.nome+' / '+progress);
+}
+const gallery=api.segs.find(s=>s.nome==='galeria');
+for(let i=0;i<6;i++){api.seek(gallery.y0+i/5*gallery.px);assert(d.querySelector('#projectCount').textContent.startsWith(String(i+1).padStart(2,'0')),'Contador correto no projeto '+(i+1))}
+api.seek(gallery.y0+1);d.querySelector('#openProject').click();assert(d.querySelector('dialog').open&&d.querySelector('#dialogTitle').textContent==='TORRA','Conceito abre em diálogo modal');d.querySelector('.dialog-close').click();await wait(20);assert(!d.querySelector('dialog').open&&d.activeElement.id==='openProject','Fechar restaura foco ao controle');
+api.seek(api.segs.find(s=>s.nome==='apagar').y0);assert(Number(d.querySelector('#telaOn').style.opacity)===1&&!d.querySelector('#telaOn').inert,'Contato permanece visível e acessível no final');
+assert(d.querySelector('.phone-email').getAttribute('href')==='mailto:lucas@asimov.academy','Contato aponta para o e-mail autorizado');
+let destination='';const nativeClick=w.HTMLAnchorElement.prototype.click;w.HTMLAnchorElement.prototype.click=function(){destination=this.href};
+d.querySelector('#msg').value='Olá Lucas! Design & IA?';d.querySelector('#campo').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));w.HTMLAnchorElement.prototype.click=nativeClick;
+assert(destination==='mailto:lucas@asimov.academy?body='+encodeURIComponent('Olá Lucas! Design & IA?'),'Formulário codifica mensagem e prepara mailto sem enviar');
+api.seek(0);await wait(600);assert(api.idle,'requestAnimationFrame para quando a cena assenta');
+d.querySelector('#modeToggle').click();assert(d.documentElement.classList.contains('is-plain'),'Modo leitura pode ser ativado');d.querySelector('#modeToggle').click();await wait(600);assert(!d.documentElement.classList.contains('is-plain')&&api.idle,'Retorno à cena mantém o agendador estável');
+sessionStorage.setItem('portfolio-mode','plain');await load();await wait(100);w=frame.contentWindow;d=frame.contentDocument;
+assert(!w.__scene&&d.querySelectorAll('.key').length===0,'Modo leitura evita construir a cena 3D');assert(w.getComputedStyle(d.querySelector('.reading')).display==='block','Documento acessível no modo leitura');d.querySelector('#modeToggle').click();await wait(600);assert(!!w.__scene&&d.querySelectorAll('.key').length>70,'Ativar 3D inicializa a cena sob demanda');
+sessionStorage.removeItem('portfolio-mode');frame.style.width='390px';frame.style.height='844px';await load();await wait(100);w=frame.contentWindow;d=frame.contentDocument;
+assert(w.innerWidth===390&&d.documentElement.classList.contains('is-plain'),'Mobile 390 px inicia no modo leitura');
+assert(d.documentElement.scrollWidth===d.documentElement.clientWidth,'Mobile sem overflow horizontal');
+assert(w.getComputedStyle(d.querySelector('.project-grid')).gridTemplateColumns.split(' ').length===1,'Projetos mobile organizados em uma coluna');
+frame.style.width='1280px';frame.style.height='720px';frame.setAttribute('sandbox','allow-same-origin');await load();await wait(100);w=frame.contentWindow;d=frame.contentDocument;
+assert(w.getComputedStyle(d.querySelector('.reading')).display==='block','Sem JavaScript, conteúdo continua disponível');
+assert(w.getComputedStyle(d.querySelector('.stage')).display==='none','Sem JavaScript, cenário não encobre o documento');
+frame.removeAttribute('sandbox');sessionStorage.setItem('portfolio-mode','3d');await load();await wait(100);w=frame.contentWindow;d=frame.contentDocument;
+w.__scene.seek(w.__scene.segs.find(s=>s.nome==='apagar').y0);await wait(100);await new Promise(r=>{frame.onload=r;frame.src='../index-v2.html?deep-link-check=1#mesa'});await wait(200);w=frame.contentWindow;d=frame.contentDocument;
+assert(w.scrollY===0&&Number(d.querySelector('#heroCopy').style.opacity)===1,'Deep link #mesa restaura a abertura ao recarregar');
+} catch(e){assert(false,e.stack||String(e))}finally{if(saved===null)sessionStorage.removeItem('portfolio-mode');else sessionStorage.setItem('portfolio-mode',saved);document.querySelector('#status').textContent=`${passed} verificações passaram; ${failed} falharam.`;document.title=failed?'FAIL — V2':'PASS — V2';}
+})();
+</script></html>
