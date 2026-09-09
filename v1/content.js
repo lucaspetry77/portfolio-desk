@@ -32,21 +32,21 @@ const HISTORIA = [
     recto: [
       { tipo: 'nota', x: 26, y: 28, rot: -2, tam: 'p', texto: 'este caderno pertence a' },
       { tipo: 'nota', x: 26, y: 48, rot: -1, tam: 'g', texto: 'Lucas' },
-      { tipo: 'polaroid', x: 88, y: 122, rot: 5, img: '../assets/img/foto-perfil.webp', fita: ['t'] },
+      { tipo: 'polaroid', x: 88, y: 122, rot: 5, img: '/assets/img/foto-perfil.webp', fita: ['t'] },
       { tipo: 'nota', x: 26, y: 356, rot: 1, texto: 'designer, em Porto Alegre.' },
     ],
     verso: [
       { tipo: 'nota', x: 26, y: 30, rot: -2, tam: 'g', texto: 'Como tudo\ncomeçou' },
-      { tipo: 'polaroid', x: 22, y: 132, rot: -5, img: '../assets/img/foto-2019.webp', fita: ['tl'] },
+      { tipo: 'polaroid', x: 22, y: 132, rot: -5, img: '/assets/img/foto-2019.webp', fita: ['tl'] },
       { tipo: 'adesivo', x: 116, y: 118, rot: 8, texto: '2019', cor: '#FFD23F', forma: 'pill' },
-      { tipo: 'polaroid', x: 146, y: 236, rot: 4, img: '../assets/img/foto-2022.webp', fita: ['tr'] },
+      { tipo: 'polaroid', x: 146, y: 236, rot: 4, img: '/assets/img/foto-2022.webp', fita: ['tr'] },
       { tipo: 'adesivo', x: 112, y: 372, rot: -7, texto: '2022', cor: '#F45A2E', forma: 'pill' },
     ],
   },
   { // folha 2 — frente: o que faço hoje / verso: crachá freelancer
     recto: [
       { tipo: 'nota', x: 26, y: 30, rot: -1, tam: 'g', texto: 'O que faço\nhoje' },
-      { tipo: 'polaroid', x: 92, y: 128, rot: -4, img: '../assets/img/foto-2026.webp', fita: ['t'] },
+      { tipo: 'polaroid', x: 92, y: 128, rot: -4, img: '/assets/img/foto-2026.webp', fita: ['t'] },
       { tipo: 'adesivo', x: 190, y: 118, rot: 10, texto: '2026', cor: '#2743E0', forma: 'pill' },
       { tipo: 'nota', x: 26, y: 340, rot: 1, texto: 'Designer e Instrutor de Vibe Design\nna Asimov Academy' },
     ],
@@ -66,7 +66,7 @@ const HISTORIA = [
     ],
     verso: [
       { tipo: 'adesivo', x: 40, y: 40, rot: -6, texto: 'Asimov Academy', cor: '#2743E0', forma: 'pill' },
-      { tipo: 'polaroid', x: 44, y: 130, rot: -3, wide: true, img: '../assets/img/thumb-projeto.webp', legenda: '[legenda do projeto]', fita: ['tr'] },
+      { tipo: 'polaroid', x: 44, y: 130, rot: -3, wide: true, img: '/assets/img/thumb-projeto.webp', legenda: '[legenda do projeto]', fita: ['tr'] },
     ],
   },
   { // folha 4 — frente: de onde vim, pra onde fui. verso: por enquanto é isso
