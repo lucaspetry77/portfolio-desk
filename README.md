@@ -4,6 +4,16 @@ Portfólio pessoal do Lucas Petry. A pessoa chega olhando a mesa de trabalho de 
 
 Site estático, sem framework nem etapa de build. Tudo local: fontes, imagens e Three.js.
 
+## Versões
+
+| URL | Versão | O que tem |
+| --- | --- | --- |
+| `/` | v3 (atual) | mesa, ateliê e avatar com conversa guiada |
+| `/v2.html` | v2 | a mesma cena sem o avatar |
+| `/v1/` | v1 | primeira versão: cortina de tecido em WebGL, final escuro, WhatsApp |
+
+v2 e v3 compartilham `css/`, `js/` e `assets/`. A v1 tem código próprio em `v1/` e só compartilha `assets/`.
+
 ## Rodar
 
 ```sh
@@ -17,7 +27,9 @@ Atalhos por hash: `#mesa`, `#projetos`, `#historia`, `#atelie`, `#contato`, `#le
 ## Estrutura
 
 ```
-index.html              entrada: cena, navegação, modo leitura, avatar
+index.html              v3: cena, navegação, modo leitura, avatar
+v2.html                 v2: mesma cena, sem avatar
+v1/                     v1: código próprio (cortina WebGL), funcional
 css/
   styles.css            tokens, materiais do MacBook, mesa, slides, caderno, celular, modo leitura
   desk-discoveries.css  ateliê (cartão de visita e miniatura da mesa)
@@ -37,7 +49,6 @@ assets/
   vendor/               Three.js 0.170 e licença
 tests/                  suítes que rodam no navegador, sem instalar nada
 docs/                   briefing, revisão da v2, notas do avatar e prompt de recriação
-legacy/v1/              primeira versão (cortina de tecido em WebGL, final escuro), funcional
 ```
 
 ## Editar
@@ -51,9 +62,9 @@ legacy/v1/              primeira versão (cortina de tecido em WebGL, final escu
 
 Com o servidor rodando, abra no navegador:
 
-- `tests/v2-checks.html` — cena, câmera em todos os segmentos, galeria, diálogo, modo leitura, fallback sem JS
-- `tests/discoveries-checks.html` — ateliê
-- `tests/avatar-checks.html` — avatar, conversa, voz e microfone (com mocks)
+- `tests/v2-checks.html` — `v2.html`: cena, câmera em todos os segmentos, galeria, diálogo, modo leitura, fallback sem JS
+- `tests/discoveries-checks.html` — `index.html`: ateliê
+- `tests/avatar-checks.html` — `index.html`: avatar, conversa, voz e microfone (com mocks)
 - `tests/v2-mobile.html` e `tests/discoveries-mobile.html` — viewport 390 × 844 em iframe
 
 ## Fontes das imagens
