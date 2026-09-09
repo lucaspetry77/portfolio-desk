@@ -18,7 +18,6 @@ document.documentElement.classList.add('js');
 if (!document.documentElement.classList.contains('is-plain') && 'scrollRestoration' in history) history.scrollRestoration = 'manual';
 </script>
 <link rel="stylesheet" href="css/styles.css">
-<link rel="stylesheet" href="css/avatar-assistant.css">
 <link rel="stylesheet" href="css/desk-discoveries.css">
 </head>
 <body>
@@ -238,26 +237,6 @@ if (!document.documentElement.classList.contains('is-plain') && 'scrollRestorati
 </main>
 <dialog id="projectDialog" aria-labelledby="dialogTitle"><button class="dialog-close" aria-label="Fechar projeto" autofocus>×</button><div class="dialog-art" aria-hidden="true"></div><div class="dialog-copy"><span class="eyebrow">EXPLORAÇÃO CRIATIVA / CONCEITO</span><h2 id="dialogTitle"></h2><p id="dialogDescription"></p><span class="dialog-meta"></span><p class="concept-note">Este é um projeto ilustrativo. O case completo entra aqui em breve.</p><a href="mailto:lucas@asimov.academy">Vamos criar algo assim? ↗</a></div></dialog>
 <noscript><style>.stage,.hero-copy,.scroller,.view-controls,.gallery-controls,.vignette,.grain{display:none!important}.reading{display:block!important}.dock{position:sticky;bottom:16px}.site-header{position:relative}</style></noscript>
-<button hidden id="avatarLaunch" aria-label="Conversar com o avatar do Lucas" aria-haspopup="dialog"><span id="avatarHome"><span id="avatarPortrait" aria-hidden="true"><span class="avatar-aura"></span><canvas id="avatarFallback" width="512" height="512"></canvas><canvas id="avatarCanvas"></canvas></span></span><span class="avatar-launch-label"><i></i> Vamos conversar <span>↗</span></span></button>
-<dialog id="avatarDialog" aria-labelledby="avatarTitle">
-  <div class="avatar-shade"></div>
-  <header class="avatar-header"><span class="avatar-wordmark">lp<span>.</span> <small>LUCAS PETRY <b>DEMO</b></small></span><button id="avatarClose" autofocus aria-label="Fechar conversa e voltar à mesa">Voltar à mesa <span>×</span></button></header>
-  <div class="avatar-conversation">
-    <div id="avatarSeat"></div>
-    <div class="avatar-intro"><span id="avatarStatus" role="status">PRESENTE, DO OUTRO LADO DA TELA.</span><h2 id="avatarTitle">Toda boa ideia começa<br>com uma conversa<span>.</span></h2></div>
-    <section class="avatar-chat" aria-label="Conversa com a demo do Lucas">
-      <div class="avatar-chat-toolbar"><span><i></i> Lucas digital</span><div><button id="avatarReset" aria-label="Reiniciar conversa">Recomeçar</button><button id="avatarVoice" aria-pressed="false">Voz desligada</button></div></div>
-      <div id="avatarMessages" role="log" aria-label="Mensagens" aria-live="polite" aria-relevant="additions"></div>
-      <div id="avatarSuggestions" aria-label="Sugestões de perguntas"></div>
-      <form id="avatarForm"><label class="sr-only" for="avatarInput">Sua mensagem</label><textarea id="avatarInput" rows="1" maxlength="800" placeholder="Me conta o que você tem em mente…"></textarea><button id="avatarMic" type="button" aria-label="Ditar mensagem" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10v2a7 7 0 0014 0v-2M12 19v3M8 22h8"/></svg></button><button id="avatarSend" type="submit" aria-label="Enviar mensagem">↑</button></form>
-      <div id="avatarNotice" role="status"></div>
-      <div id="avatarMicConsent" hidden><p>A transcrição usa o reconhecimento de voz do navegador, que pode processar o áudio online. Revise o texto antes de enviar.</p><button id="avatarMicConfirm">Ativar microfone</button><button id="avatarMicCancel">Agora não</button></div>
-    </section>
-    <p class="avatar-disclosure">Respostas guiadas · Voz sintética do navegador · Nenhuma conversa enviada ao Lucas</p>
-  </div>
-</dialog>
-<script src="js/avatar-brain.js" defer></script>
-<script src="js/avatar-assistant.js" defer></script>
 <script src="js/content.js" defer></script>
 <script src="js/experience.js" defer></script>
 <script src="js/desk-discoveries.js" defer></script>

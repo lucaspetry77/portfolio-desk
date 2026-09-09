@@ -1,6 +1,6 @@
 # Portfólio "Mesa"
 
-Portfólio pessoal do Lucas Petry. A pessoa chega olhando a mesa de trabalho de cima; o scroll senta a câmera, abre o MacBook (100% CSS 3D), folheia o caderno, passa pelo ateliê (cartão de visita e miniatura da mesa) e termina no celular, onde a conversa começa. Um avatar no canto oferece uma conversa guiada.
+Portfólio pessoal do Lucas Petry. A pessoa chega olhando a mesa de trabalho de cima; o scroll senta a câmera, abre o MacBook (100% CSS 3D), folheia o caderno, passa pelo ateliê (cartão de visita e miniatura da mesa) e termina no celular, onde a conversa começa. Em `v3.html`, um avatar no canto oferece uma conversa guiada.
 
 Site estático, sem framework nem etapa de build. Tudo local: fontes, imagens e Three.js.
 
@@ -8,11 +8,11 @@ Site estático, sem framework nem etapa de build. Tudo local: fontes, imagens e 
 
 | URL | Versão | O que tem |
 | --- | --- | --- |
-| `/` | v3 (atual) | mesa, ateliê e avatar com conversa guiada |
-| `/v2.html` | v2 | a mesma cena sem o avatar |
+| `/` | atual (v2) | mesa, ateliê, caderno, celular; sem avatar |
+| `/v3.html` | v3 | a mesma cena com o avatar e a conversa guiada |
 | `/v1/` | v1 | primeira versão: cortina de tecido em WebGL, final escuro, WhatsApp |
 
-v2 e v3 compartilham `css/`, `js/` e `assets/`. A v1 tem código próprio em `v1/` e só compartilha `assets/`.
+`/` e `/v3.html` compartilham `css/`, `js/` e `assets/`. A v1 tem código próprio em `v1/` e só compartilha `assets/`.
 
 ## Rodar
 
@@ -27,8 +27,8 @@ Atalhos por hash: `#mesa`, `#projetos`, `#historia`, `#atelie`, `#contato`, `#le
 ## Estrutura
 
 ```
-index.html              v3: cena, navegação, modo leitura, avatar
-v2.html                 v2: mesma cena, sem avatar
+index.html              atual: cena, navegação, modo leitura (sem avatar)
+v3.html                 mesma cena com o avatar
 v1/                     v1: código próprio (cortina WebGL), funcional
 css/
   styles.css            tokens, materiais do MacBook, mesa, slides, caderno, celular, modo leitura
@@ -55,16 +55,16 @@ docs/                   briefing, revisão da v2, notas do avatar e prompt de re
 
 - **Conteúdo**: `js/content.js` tem os slides, as páginas do caderno e o destino do botão de contato. Os cards estáticos do modo leitura ficam no próprio `index.html`.
 - **Roteiro do scroll**: objeto `CFG` no topo de `js/scene.js`. `tiltEnd + lidOpen` precisa somar 180.
-- **Avatar**: para tirar, remova o `<link>` de `avatar-assistant.css`, o bloco `#avatarLaunch` + `<dialog id="avatarDialog">` e os dois `<script>` de avatar no `index.html`.
+- **Avatar**: só existe em `v3.html`. Para levar à raiz, copie de lá o `<link>` de `avatar-assistant.css`, o bloco `#avatarLaunch` + `<dialog id="avatarDialog">` e os dois `<script>` de avatar.
 - **Mesa**: `<html data-desk="wood">` usa a madeira; sem o atributo volta a mesa tangerina do briefing.
 
 ## Testar
 
 Com o servidor rodando, abra no navegador:
 
-- `tests/v2-checks.html` — `v2.html`: cena, câmera em todos os segmentos, galeria, diálogo, modo leitura, fallback sem JS
+- `tests/v2-checks.html` — `index.html`: cena, câmera em todos os segmentos, galeria, diálogo, modo leitura, fallback sem JS
 - `tests/discoveries-checks.html` — `index.html`: ateliê
-- `tests/avatar-checks.html` — `index.html`: avatar, conversa, voz e microfone (com mocks)
+- `tests/avatar-checks.html` — `v3.html`: avatar, conversa, voz e microfone (com mocks)
 - `tests/v2-mobile.html` e `tests/discoveries-mobile.html` — viewport 390 × 844 em iframe
 
 ## Fontes das imagens
