@@ -6,7 +6,7 @@ const assert=(ok,label)=>{const li=document.createElement('li');li.textContent=(
 const saved=sessionStorage.getItem('portfolio-mode');
 const load=(url)=>new Promise(r=>{frame.onload=r;frame.src=url});
 try{
-sessionStorage.setItem('portfolio-mode','3d');await load('../index-v3.html?test=discoveries#atelie');await wait(200);
+sessionStorage.setItem('portfolio-mode','3d');await load('../index.html?test=discoveries#atelie');await wait(200);
 let w=frame.contentWindow,d=frame.contentDocument,api=w.__scene;
 assert(!!api&&!!w.deskDiscoveries,'Cena e novos objetos inicializam');
 assert(!d.querySelector('#discoveryPanel').hidden&&d.querySelector('#discoveryPanel').dataset.station==='card','Link Ateliê enquadra o cartão');
@@ -20,7 +20,7 @@ api.seek(api.segs.find(s=>s.nome==='cartao').y0+1);assert(d.querySelector('#disc
 api.seek(api.segs.find(s=>s.nome==='apagar').y0);assert(d.querySelector('#discoveryPanel').hidden&&!d.querySelector('#telaOn').inert,'Contato acessível após as novas paradas');
 api.seek(api.segs.find(s=>s.nome==='miniatura').y0+1);await wait(800);assert(api.idle,'Cena para de renderizar em repouso');
 d.querySelector('#modeToggle').click();assert(d.querySelector('#discoveryPanel').hidden&&w.getComputedStyle(d.querySelector('#atelie')).display!=='none','Modo leitura tem conteúdo equivalente e oculta controles 3D');
-frame.style.width='390px';frame.style.height='844px';await load('../index-v3.html?test=mobile#atelie');await wait(200);w=frame.contentWindow;d=frame.contentDocument;
+frame.style.width='390px';frame.style.height='844px';await load('../index.html?test=mobile#atelie');await wait(200);w=frame.contentWindow;d=frame.contentDocument;
 assert(d.documentElement.scrollWidth===390,'Modo leitura mobile sem overflow');
 d.querySelector('#modeToggle').click();w.dispatchEvent(new w.CustomEvent('portfoliochapter',{detail:{chapter:'miniatura',instant:true}}));await wait(200);
 const panel=d.querySelector('#discoveryPanel').getBoundingClientRect();assert(panel.left>=0&&panel.right<=390&&panel.bottom<=844,'Controles da miniatura cabem no mobile');

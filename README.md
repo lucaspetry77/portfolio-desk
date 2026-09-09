@@ -1,36 +1,61 @@
 # Portfólio "Mesa"
 
-Site estático, sem build. Abre com qualquer servidor local:
+Portfólio pessoal do Lucas Petry. A pessoa chega olhando a mesa de trabalho de cima; o scroll senta a câmera, abre o MacBook (100% CSS 3D), folheia o caderno, passa pelo ateliê (cartão de visita e miniatura da mesa) e termina no celular, onde a conversa começa. Um avatar no canto oferece uma conversa guiada.
+
+Site estático, sem framework nem etapa de build. Tudo local: fontes, imagens e Three.js.
+
+## Rodar
 
 ```sh
 python3 -m http.server 8000      # ou: npx serve .
 ```
 
-- `index.html` — cena (mesa, objetos, MacBook em CSS 3D, tela)
-- `styles.css` — tokens, materiais do MacBook, slides
-- `scene.js` — `CFG` (segmentos + faixas do scroll), câmera por keyframes, teclado gerado, galeria, caderno 3D, celular
-- `curtain.js` — cortina de teatro da intro da tela: tecido simulado (Verlet, pregas pinçadas no trilho, vento, abertura por cordão) renderizado com Three.js (via importmap/jsdelivr, material físico com sheen de veludo e sombra). Se o CDN não carregar, a cortina CSS de `styles.css` segue sozinha
-- `content.js` — `PROJETOS` (slides), `HISTORIA` (páginas do caderno), `CONTATO` (wa.me ou mailto do botão enviar) — edita aqui
-- `assets/img` — recortes com alpha (WebP) · `assets/fonts` — Bricolage Grotesque self-hosted
+Abra `http://localhost:8000`. Precisa ser servido por HTTP: a importação de módulos do avatar não funciona via `file://`.
 
-Superfície da mesa: `<html data-desk="wood">` usa a madeira (`assets/img/mesa.webp`); remove o atributo pra voltar à mesa tangerina do briefing.
+Atalhos por hash: `#mesa`, `#projetos`, `#historia`, `#atelie`, `#contato`, `#leitura` (modo leitura).
 
-Ajustes ficam no objeto `CFG` no topo de `scene.js`: `tiltEnd + lidOpen` precisa somar 180.
+## Estrutura
 
-A tela liga numa cortina que abre puxada pelo scroll (sem botão): `scene.js` escreve o progresso do segmento `cortina` nas variáveis `--g`/`--x` do `#intro`, e `curtain.js` lê essas variáveis a cada frame pra animar o pano em WebGL — reversível, rolar pra cima fecha de novo.
+```
+index.html              entrada: cena, navegação, modo leitura, avatar
+css/
+  styles.css            tokens, materiais do MacBook, mesa, slides, caderno, celular, modo leitura
+  desk-discoveries.css  ateliê (cartão de visita e miniatura da mesa)
+  avatar-assistant.css  avatar e diálogo de conversa
+js/
+  content.js            PROJETOS, HISTORIA e CONTATO — o conteúdo edita aqui
+  scene.js              CFG (segmentos e faixas do scroll), câmera, teclado gerado, caderno 3D, celular
+  experience.js         artes dos projetos, diálogo, modos, relógio, navegação
+  desk-discoveries.js   objetos, controles e enquadramentos do ateliê
+  avatar-assistant.js   diálogo do avatar, transição, conversa e áudio
+  avatar-brain.js       respostas locais por intenção (sem modelo de IA conectado)
+  avatar-portrait.js    retrato em relevo com Three.js
+assets/
+  img/                  recortes com alpha em WebP
+  fonts/                Bricolage Grotesque self-hosted
+  avatar/               textura do retrato
+  vendor/               Three.js 0.170 e licença
+tests/                  suítes que rodam no navegador, sem instalar nada
+docs/                   briefing, revisão da v2, notas do avatar e prompt de recriação
+legacy/v1/              primeira versão (cortina de tecido em WebGL, final escuro), funcional
+```
 
-Roteiro do scroll (`CFG.segs`, duração em vh): aproximação → cortina (abre puxada pelo scroll) → galeria → fecharNote (tampa fecha, objetos voltam) → irCaderno (câmera desce, capa abre) → paginas (uma por página de `HISTORIA`) → fecharCaderno → irCelular (tela acende, notificação) → chat (bolhas + campo real) → apagar (mesa escurece, tela apaga por último). As faixas dentro de cada segmento estão em `CFG.map`.
+## Editar
 
-Placeholders entre [colchetes] em `content.js` são pra trocar (textos do caderno, número do `CONTATO`).
+- **Conteúdo**: `js/content.js` tem os slides, as páginas do caderno e o destino do botão de contato. Os cards estáticos do modo leitura ficam no próprio `index.html`.
+- **Roteiro do scroll**: objeto `CFG` no topo de `js/scene.js`. `tiltEnd + lidOpen` precisa somar 180.
+- **Avatar**: para tirar, remova o `<link>` de `avatar-assistant.css`, o bloco `#avatarLaunch` + `<dialog id="avatarDialog">` e os dois `<script>` de avatar no `index.html`.
+- **Mesa**: `<html data-desk="wood">` usa a madeira; sem o atributo volta a mesa tangerina do briefing.
 
-## Ateliê — versões 2 e 3
+## Testar
 
-`index-v3.html#atelie` abre as duas novas paradas físicas entre o caderno e o celular: cartão de visita reversível e miniatura da mesa com rotação e separação de camadas. Também estão disponíveis na versão 2. Os projetos ilustrativos não foram alterados.
+Com o servidor rodando, abra no navegador:
 
-- `desk-discoveries.js`: objetos, conteúdo, controles e enquadramentos das novas paradas.
-- `desk-discoveries.css`: materiais e layout responsivo. O cartão respeita movimento reduzido.
-- `scene-v2.js`: segmentos `irCartao`, `cartao`, `irMiniatura` e `miniatura`; câmera com compensação de profundidade para inclinar longe do centro da mesa.
-- `tests/discoveries-checks.html`: navegação, câmera, controles, retorno, repouso e mobile.
-- `tests/discoveries-mobile.html`: visualização em iframe de 390 × 844.
+- `tests/v2-checks.html` — cena, câmera em todos os segmentos, galeria, diálogo, modo leitura, fallback sem JS
+- `tests/discoveries-checks.html` — ateliê
+- `tests/avatar-checks.html` — avatar, conversa, voz e microfone (com mocks)
+- `tests/v2-mobile.html` e `tests/discoveries-mobile.html` — viewport 390 × 844 em iframe
 
-O modo leitura inclui uma seção equivalente sobre atuação e construção do portfólio. Não há espera obrigatória: o visitante pode explorar os controles, seguir pelo scroll ou usar os atalhos.
+## Fontes das imagens
+
+Os PNGs originais (antes do recorte e da conversão para WebP) ficam em `_originais/`, fora do git. Os documentos em `docs/` são históricos e citam os nomes de arquivo anteriores à reorganização (`index-v3.html`, `scene-v2.js` etc.).

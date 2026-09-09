@@ -3,7 +3,7 @@
 const list=document.querySelector('#results'), frame=document.querySelector('iframe');let passed=0,failed=0;
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const assert=(value,label)=>{const li=document.createElement('li');li.textContent=(value?'PASS — ':'FAIL — ')+label;if(value)passed++;else{failed++;li.className='fail'}list.append(li)};
-const load=()=>new Promise(r=>{frame.onload=r;frame.src='../index-v2.html'});
+const load=()=>new Promise(r=>{frame.onload=r;frame.src='../index.html'});
 const saved=sessionStorage.getItem('portfolio-mode');sessionStorage.setItem('portfolio-mode','3d');
 try {
 await load();await wait(200);let w=frame.contentWindow,d=frame.contentDocument;
@@ -36,7 +36,7 @@ frame.style.width='1280px';frame.style.height='720px';frame.setAttribute('sandbo
 assert(w.getComputedStyle(d.querySelector('.reading')).display==='block','Sem JavaScript, conteúdo continua disponível');
 assert(w.getComputedStyle(d.querySelector('.stage')).display==='none','Sem JavaScript, cenário não encobre o documento');
 frame.removeAttribute('sandbox');sessionStorage.setItem('portfolio-mode','3d');await load();await wait(100);w=frame.contentWindow;d=frame.contentDocument;
-w.__scene.seek(w.__scene.segs.find(s=>s.nome==='apagar').y0);await wait(100);await new Promise(r=>{frame.onload=r;frame.src='../index-v2.html?deep-link-check=1#mesa'});await wait(200);w=frame.contentWindow;d=frame.contentDocument;
+w.__scene.seek(w.__scene.segs.find(s=>s.nome==='apagar').y0);await wait(100);await new Promise(r=>{frame.onload=r;frame.src='../index.html?deep-link-check=1#mesa'});await wait(200);w=frame.contentWindow;d=frame.contentDocument;
 assert(w.scrollY===0&&Number(d.querySelector('#heroCopy').style.opacity)===1,'Deep link #mesa restaura a abertura ao recarregar');
 } catch(e){assert(false,e.stack||String(e))}finally{if(saved===null)sessionStorage.removeItem('portfolio-mode');else sessionStorage.setItem('portfolio-mode',saved);document.querySelector('#status').textContent=`${passed} verificações passaram; ${failed} falharam.`;document.title=failed?'FAIL — V2':'PASS — V2';}
 })();

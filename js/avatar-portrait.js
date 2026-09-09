@@ -1,6 +1,6 @@
 /* Portrait relief: real subdivided geometry and local texture, not a scanned/rigged head.
    Art-directed depth and bounded rotation preserve likeness from a single source view. */
-import * as THREE from './assets/vendor/three.module.min.js';
+import * as THREE from '../assets/vendor/three.module.min.js';
 export function createPortrait(canvas, image) {
   const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true, powerPreference:'low-power'});
   renderer.setClearColor(0x000000,0);
