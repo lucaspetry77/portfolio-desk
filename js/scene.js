@@ -26,10 +26,6 @@ const CFG = {
     { nome: 'irCaderno',     vh: 95 },
     { nome: 'paginas',       vh: ({ P }) => P * CFG.paginaVH },
     { nome: 'fecharCaderno', vh: 55 },
-    { nome: 'irCartao',      vh: 95 },
-    { nome: 'cartao',        vh: 100 },
-    { nome: 'irMiniatura',   vh: 100 },
-    { nome: 'miniatura',     vh: 130 },
     { nome: 'irCelular',     vh: 90 },
     { nome: 'chat',          vh: 80 },
     { nome: 'apagar',        vh: 35 },
@@ -278,9 +274,7 @@ function initPortfolioScene() {
      ===================================================== */
   let vw, vh, S0, SE, ty0, tyEnd, totalPx = 0, displayWidth = 968;
   const K = {};            // keyframes da câmera {x, y, s, tilt, ty}: alvo em px da mesa, escala, tilt, ty extra
-  const segs = [];         if (window.deskDiscoveries) Object.assign(K, window.deskDiscoveries.layout(vw, vh));
-
-    // segmentos em px: {nome, px, y0}
+  const segs = [];         // segmentos em px: {nome, px, y0}
   const P = {};            // progresso local (0→1) de cada segmento, recalculado no render
   const box = el => ({ cx: el.offsetLeft + el.offsetWidth / 2, cy: el.offsetTop + el.offsetHeight / 2, w: el.offsetWidth, h: el.offsetHeight });
   function layout() {
@@ -313,8 +307,6 @@ function initPortfolioScene() {
     K.spread     = { x: cad.cx - cad.w / 2, y: cad.cy, s: sCad, tilt: 0, ty: 0 }; // capa abre pra esquerda: spread = 2× largura
     K.celular    = { x: cel.cx, y: cel.cy, s: Math.min(0.70 * vh / cel.h, 0.82 * vw / cel.w), tilt: 0, ty: 0 };
 
-    if (window.deskDiscoveries) Object.assign(K, window.deskDiscoveries.layout(vw, vh));
-
     // segmentos em px (não muda quando a barra do browser some)
     segs.length = 0;
     let y0 = 0;
@@ -343,9 +335,7 @@ function initPortfolioScene() {
     { seg: 'fecharNote',  faixa: M.fecharNote.camera,  de: 'note',       para: 'inicio' },
     { seg: 'irCaderno',   faixa: M.irCaderno.chegar,   de: 'inicio',     para: 'cadFechado' },
     { seg: 'irCaderno',   faixa: M.irCaderno.abrir,    de: 'cadFechado', para: 'spread' },
-    { seg: 'irCartao', faixa: [0, .9], de: 'spread', para: 'cartao' },
-    { seg: 'irMiniatura', faixa: [0, .9], de: 'cartao', para: 'miniatura' },
-    { seg: 'irCelular', faixa: M.irCelular.camera, de: 'miniatura', para: 'celular' },
+    { seg: 'irCelular',   faixa: M.irCelular.camera, de: 'spread',     para: 'celular' },
   ];
   function camera() {
     let c = K.inicio;
@@ -508,7 +498,6 @@ function initPortfolioScene() {
     const noiteV = 0;
     night.style.opacity = noiteV.toFixed(3);
     night.style.visibility = noiteV > .001 ? 'visible' : 'hidden';
-    window.deskDiscoveries?.render(P, reduce);
     updateHUD(y, cur, pk >= 1 && pf < .04);   // invisível não vira camada composta
   }
 
@@ -575,13 +564,13 @@ function initPortfolioScene() {
   const hero = $('#heroCopy'), galleryControls = $('#galleryControls');
   const chapterLinks = [...document.querySelectorAll('[data-chapter]')];
   let chapter = '', projectIndex = 0, hudSlide = -1;
-  const chapters = new Set(['mesa', 'projetos', 'historia', 'atelie', 'miniatura', 'contato']);
+  const chapters = new Set(['mesa', 'projetos', 'historia', 'contato']);
   function updateHUD(y, slide, gallery) {
     const h = 1 - seg(P.aproximacao, [0, .22]);
     hero.style.opacity = h.toFixed(3);
     hero.style.visibility = h === 0 ? 'hidden' : '';
     hero.style.transform = `translate3d(0,${(-24 * (1-h)).toFixed(2)}px,0)`;
-    const name = y < segOf('cortina').y0 ? 'mesa' : y < segOf('fecharNote').y0 ? 'projetos' : y < segOf('irCartao').y0 ? 'historia' : y < segOf('irCelular').y0 ? 'atelie' : 'contato';
+    const name = y < segOf('cortina').y0 ? 'mesa' : y < segOf('fecharNote').y0 ? 'projetos' : y < segOf('irCelular').y0 ? 'historia' : 'contato';
     if (chapter !== name) {
       chapter = name;
       chapterLinks.forEach(a => { if (a.dataset.chapter === name) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); });
@@ -603,8 +592,6 @@ function initPortfolioScene() {
   function chapterY(name) {
     if (name === 'projetos') return segOf('galeria').y0 + 1;
     if (name === 'historia') return segOf('paginas').y0 + segOf('paginas').px / NP;
-    if (name === 'atelie') return segOf('cartao').y0 + 1;
-    if (name === 'miniatura') return segOf('miniatura').y0 + 1;
     if (name === 'contato') return segOf('apagar').y0 - 1;
     return 0;
   }

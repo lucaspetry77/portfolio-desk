@@ -1,6 +1,6 @@
 # Portfólio "Mesa"
 
-Portfólio pessoal do Lucas Petry. A pessoa chega olhando a mesa de trabalho de cima; o scroll senta a câmera, abre o MacBook (100% CSS 3D), folheia o caderno, passa pelo ateliê (cartão de visita e miniatura da mesa) e termina no celular, onde a conversa começa. Em `v3.html`, um avatar no canto oferece uma conversa guiada.
+Portfólio pessoal do Lucas Petry. A pessoa chega olhando a mesa de trabalho de cima; o scroll senta a câmera, abre o MacBook (100% CSS 3D), folheia o caderno e termina no celular, onde a conversa começa. Em `v3.html`, um avatar no canto oferece uma conversa guiada.
 
 Site estático, sem framework nem etapa de build. Tudo local: fontes, imagens e Three.js.
 
@@ -8,7 +8,7 @@ Site estático, sem framework nem etapa de build. Tudo local: fontes, imagens e 
 
 | URL | Versão | O que tem |
 | --- | --- | --- |
-| `/` | atual (v2) | mesa, ateliê, caderno, celular; sem avatar |
+| `/` | atual (v2) | mesa, caderno, celular; sem avatar |
 | `/v3.html` | v3 | a mesma cena com o avatar e a conversa guiada |
 | `/v1/` | v1 | primeira versão: cortina de tecido em WebGL, final escuro, WhatsApp |
 
@@ -22,7 +22,7 @@ python3 -m http.server 8000      # ou: npx serve .
 
 Abra `http://localhost:8000`. Precisa ser servido por HTTP: a importação de módulos do avatar não funciona via `file://`.
 
-Atalhos por hash: `#mesa`, `#projetos`, `#historia`, `#atelie`, `#contato`, `#leitura` (modo leitura).
+Atalhos por hash: `#mesa`, `#projetos`, `#historia`, `#contato`, `#leitura` (modo leitura).
 
 ## Estrutura
 
@@ -32,13 +32,11 @@ v3.html                 mesma cena com o avatar
 v1/                     v1: código próprio (cortina WebGL), funcional
 css/
   styles.css            tokens, materiais do MacBook, mesa, slides, caderno, celular, modo leitura
-  desk-discoveries.css  ateliê (cartão de visita e miniatura da mesa)
   avatar-assistant.css  avatar e diálogo de conversa
 js/
   content.js            PROJETOS, HISTORIA e CONTATO — o conteúdo edita aqui
   scene.js              CFG (segmentos e faixas do scroll), câmera, teclado gerado, caderno 3D, celular
   experience.js         artes dos projetos, diálogo, modos, relógio, navegação
-  desk-discoveries.js   objetos, controles e enquadramentos do ateliê
   avatar-assistant.js   diálogo do avatar, transição, conversa e áudio
   avatar-brain.js       respostas locais por intenção (sem modelo de IA conectado)
   avatar-portrait.js    retrato em relevo com Three.js
@@ -63,9 +61,8 @@ docs/                   briefing, revisão da v2, notas do avatar e prompt de re
 Com o servidor rodando, abra no navegador:
 
 - `tests/v2-checks.html` — `index.html`: cena, câmera em todos os segmentos, galeria, diálogo, modo leitura, fallback sem JS
-- `tests/discoveries-checks.html` — `index.html`: ateliê
 - `tests/avatar-checks.html` — `v3.html`: avatar, conversa, voz e microfone (com mocks)
-- `tests/v2-mobile.html` e `tests/discoveries-mobile.html` — viewport 390 × 844 em iframe
+- `tests/v2-mobile.html` — viewport 390 × 844 em iframe
 
 ## Fontes das imagens
 

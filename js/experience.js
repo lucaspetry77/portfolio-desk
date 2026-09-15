@@ -77,7 +77,7 @@
     if (link.classList.contains('skip-link')) return;
     link.addEventListener('click', e => {
       const id = link.getAttribute('href').slice(1);
-      if (!['mesa', 'projetos', 'historia', 'atelie', 'contato'].includes(id)) return;
+      if (!['mesa', 'projetos', 'historia', 'contato'].includes(id)) return;
       if (html.classList.contains('is-plain')) return;
       e.preventDefault();
       window.dispatchEvent(new CustomEvent('portfoliochapter', { detail: { chapter: id, instant: e.detail === 0 } }));

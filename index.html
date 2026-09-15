@@ -18,7 +18,6 @@ document.documentElement.classList.add('js');
 if (!document.documentElement.classList.contains('is-plain') && 'scrollRestoration' in history) history.scrollRestoration = 'manual';
 </script>
 <link rel="stylesheet" href="css/styles.css">
-<link rel="stylesheet" href="css/desk-discoveries.css">
 </head>
 <body>
 <a class="skip-link" href="#leitura">Pular para o conteúdo</a>
@@ -206,8 +205,7 @@ if (!document.documentElement.classList.contains('is-plain') && 'scrollRestorati
   <a href="#mesa" data-chapter="mesa" aria-current="location"><span class="dock-number">01</span> Mesa</a>
   <a href="#projetos" data-chapter="projetos"><span class="dock-number">02</span> Projetos</a>
   <a href="#historia" data-chapter="historia"><span class="dock-number">03</span> História</a>
-  <a href="#atelie" data-chapter="atelie"><span class="dock-number">04</span> Ateliê</a>
-  <a href="#contato" data-chapter="contato"><span class="dock-number">05</span> Contato</a>
+  <a href="#contato" data-chapter="contato"><span class="dock-number">04</span> Contato</a>
 </nav>
 <div class="view-controls"><button id="modeToggle" type="button">Modo leitura <span aria-hidden="true">≡</span></button><button id="lightToggle" type="button" aria-pressed="false" aria-label="Alternar luz da mesa">Luz <span aria-hidden="true">☼</span></button></div>
 <div class="gallery-controls" id="galleryControls" hidden><button id="previousProject" aria-label="Projeto anterior">←</button><span id="projectCount" aria-live="polite">01 / 06</span><button id="nextProject" aria-label="Próximo projeto">→</button><button id="openProject">Ver conceito ↗</button></div>
@@ -232,14 +230,12 @@ if (!document.documentElement.classList.contains('is-plain') && 'scrollRestorati
 <article class="project-card" style="--bg:#17171B;--fg:#D6B36A"><div class="project-art" data-art="5" aria-hidden="true"><span>Tempus</span></div><div class="project-card-info"><span>Branding e loja · Conceito</span><h3>Tempus</h3><p>Relojoaria de luxo. Branding e e-commerce.</p><button data-project="5">Explorar conceito <span aria-hidden="true">↗</span></button></div></article>
 </div></section>
   <section id="historia" class="reading-about"><div><span class="eyebrow">02 / POR TRÁS DAS IDEIAS</span><h2>Curiosidade<br>é meu ponto<br>de partida.</h2><p>Comecei no marketing. Entre sites, identidades e estratégias, encontrei no design a minha forma de conectar ideias e pessoas.</p><p>Hoje, sou designer e instrutor de Vibe Design na Asimov Academy. Ensino a transformar possibilidades da IA em projetos com intenção.</p><span class="about-signature">Lucas Petry.</span></div><figure><img src="assets/img/foto-perfil.webp" alt="Lucas Petry" width="500" height="500" loading="lazy"><figcaption>Designer, em Porto Alegre.</figcaption></figure></section>
-<section id="atelie" class="reading-atelier"><span class="eyebrow">04 / ALÉM DA TELA</span><h2>Outros ângulos.</h2><div class="atelier-summary"><article><small>01 / O CARTÃO</small><h3>Prazer, Lucas.</h3><p>Designer e instrutor de Vibe Design na Asimov Academy. Design para dar forma às ideias, educação para compartilhar o processo e IA para explorar possibilidades.</p></article><article><small>02 / A MINIATURA</small><h3>Esta mesa também é um projeto.</h3><p>A madeira conecta o cenário. Imagens e planos em CSS 3D dão volume aos objetos. O scroll conduz a câmera, enquanto texto e controles continuam acessíveis em HTML.</p><p>No modo 3D, uma miniatura permite girar e separar essas camadas para ver como elas se relacionam.</p></article></div></section>
   <section id="contato" class="reading-contact"><span class="eyebrow">03 / A PRÓXIMA IDEIA</span><h2>Começa com<br>um oi<span>.</span></h2><a href="mailto:lucas@asimov.academy">lucas@asimov.academy <span aria-hidden="true">↗</span></a><p>Design, uma colaboração ou só uma boa conversa.</p><small>Lucas Petry © 2026 · Feito com intenção.</small></section>
 </main>
 <dialog id="projectDialog" aria-labelledby="dialogTitle"><button class="dialog-close" aria-label="Fechar projeto" autofocus>×</button><div class="dialog-art" aria-hidden="true"></div><div class="dialog-copy"><span class="eyebrow">EXPLORAÇÃO CRIATIVA / CONCEITO</span><h2 id="dialogTitle"></h2><p id="dialogDescription"></p><span class="dialog-meta"></span><p class="concept-note">Este é um projeto ilustrativo. O case completo entra aqui em breve.</p><a href="mailto:lucas@asimov.academy">Vamos criar algo assim? ↗</a></div></dialog>
 <noscript><style>.stage,.hero-copy,.scroller,.view-controls,.gallery-controls,.vignette,.grain{display:none!important}.reading{display:block!important}.dock{position:sticky;bottom:16px}.site-header{position:relative}</style></noscript>
 <script src="js/content.js" defer></script>
 <script src="js/experience.js" defer></script>
-<script src="js/desk-discoveries.js" defer></script>
 <script src="js/scene.js" defer></script>
 </body>
 </html>
